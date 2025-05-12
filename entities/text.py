@@ -6,7 +6,7 @@ class Text:
 		self.color = color
 		self.text = self.font.render(text, True, color)
 		self.rect = self.text.get_rect()
-		self.rect.move_ip(position)
+		self.rect.center = position
 
 	def update(self):
 		pass
