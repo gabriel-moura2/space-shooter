@@ -11,8 +11,9 @@ class Scene:
                 pygame.quit()
                 exit()
     
-    def update(self):
-        pass
+    def update(self, dt):
+        for entity in self.entities:
+            entity.update(dt)
 
     def draw(self, screen):
         for entity in self.entities:

@@ -14,9 +14,9 @@ class Game:
         
     def run(self):
         while self.running:
-            self.clock.tick(FPS)
+            dt = self.clock.tick(FPS) / 1000
             self.scene_manager.handle_events()
-            self.scene_manager.update()
+            self.scene_manager.update(dt)
             self.scene_manager.draw(self.screen)
             pygame.display.flip()
 

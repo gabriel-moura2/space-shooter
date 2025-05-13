@@ -8,7 +8,7 @@ class Text:
 		self.rect = self.text.get_rect()
 		self.rect.center = position
 
-	def update(self):
+	def update(self, dt):
 		pass
 	
 	def draw(self, screen):
