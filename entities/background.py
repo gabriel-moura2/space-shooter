@@ -16,7 +16,7 @@ class Background(Entity):
 
     def update(self, dt):
        self.scroll_x = (self.scroll_x + self.scroll_speed * dt) % self.img_width
-       self.position = (-self.scroll_x, 0)
+       self.rect.move_ip(-self.scroll_x, 0)
 
     def move(self):
         self.scroll_speed = SCROLL_SPEED
