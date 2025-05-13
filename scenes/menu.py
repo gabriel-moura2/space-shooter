@@ -9,10 +9,6 @@ from config import TITLE_X, TITLE_Y, TITLE_SIZE, TITLE_COLOR, HINT_X, HINT_Y, HI
 class MenuScene(Scene):
     def __init__(self, manager):
         super().__init__(manager)
-        self.entities = [
-            Text((TITLE_X,TITLE_Y), "Space Shooter", TITLE_SIZE, TITLE_COLOR),
-            Text((HINT_X, HINT_Y), "Enter space", HINT_SIZE, HINT_COLOR)
-        ]
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -28,3 +24,10 @@ class MenuScene(Scene):
     def draw(self, screen):
         screen.fill(MENU_BACKGROUND_COLOR)
         super().draw(screen)
+    
+    @property
+    def entities(self):
+        return [
+            Text((TITLE_X,TITLE_Y), "Space Shooter", TITLE_SIZE, TITLE_COLOR),
+            Text((HINT_X, HINT_Y), "Enter space", HINT_SIZE, HINT_COLOR)
+        ]

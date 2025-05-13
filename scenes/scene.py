@@ -3,7 +3,6 @@ import pygame
 class Scene:
     def __init__(self, manager):
         self.manager = manager
-        self.entities = []
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -18,3 +17,7 @@ class Scene:
     def draw(self, screen):
         for entity in self.entities:
             entity.draw(screen)
+    
+    @property
+    def entities(self):
+        return []
