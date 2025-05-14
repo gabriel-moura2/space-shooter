@@ -9,10 +9,14 @@ class LevelScene(Scene):
     def __init__(self, manager, level):
         super().__init__(manager)
         self.level = level
-        self.projectiles = []
-        self.enemies = [EnemyShip(SCREEN_HEIGHT / 2, 3, self.projectiles)]
-        self.player = PlayerShip(self.projectiles)
+        self.explosions = []
+        self.enemies = pygame.sprite.Group()
+        self.projectiles = pygame.sprite.Group()
+        self.enemies.add(EnemyShip(SCREEN_HEIGHT / 2, 3))
+        self.player = pygame.sprite.GroupSingle()
+        self.player.add(PlayerShip())
         self.background = Background()
+        self.entities = [self.player, self.enemies, self.projectiles]
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -20,46 +24,44 @@ class LevelScene(Scene):
                 pygame.quit()
                 exit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                self.player.shoot()
+                self.player.sprite.shoot(self.projectiles)
         pressed_keys = pygame.key.get_pressed()
         if (pressed_keys[pygame.K_w] or pressed_keys[pygame.K_UP]):
-            self.player.speed = -SHIP_SPEED * 2
+            self.player.sprite.speed = -SHIP_SPEED * 2
         elif (pressed_keys[pygame.K_s] or pressed_keys[pygame.K_DOWN]):
-            self.player.speed = SHIP_SPEED * 2
+            self.player.sprite.speed = SHIP_SPEED * 2
         else:
-            self.player.speed = 0
+            self.player.sprite.speed = 0
     
     def update(self, dt):
+        self.background.update(dt)
         super().update(dt)
-        for projectile in self.projectiles:
+        for projectile in self.projectiles.sprites():
             if projectile.rect.left < 0 or projectile.rect.right > SCREEN_WIDTH:
                 self.projectiles.remove(projectile)
 
-        for enemy in self.enemies:
+        for enemy in self.enemies.sprites():
             view = (enemy.rect.centerx - SCREEN_WIDTH, enemy.rect.centery, enemy.rect.centerx, enemy.rect.centery)
-            if self.player.rect.clipline(view):
-                enemy.shoot()
+            if self.player.sprite.rect.clipline(view):
+                enemy.shoot(self.projectiles)
         
         # Melhorar renderização depois
-        for projectile in self.projectiles:
-            for enemy in self.enemies:
-                if projectile.rect.colliderect(enemy.rect):
-                    self.projectiles.remove(projectile)
-                    enemy.hit(projectile.damage)
-                    if enemy.health <= 0:
-                        self.enemies.remove(enemy)
-                    break
-            if self.player.rect.colliderect(projectile.rect):
-                self.projectiles.remove(projectile)
-                self.player.hit(projectile.damage)
-                if self.player.health <= 0:
-                    pygame.quit()
-                    exit()
+        sprite_dict =pygame.sprite.groupcollide(self.projectiles, self.enemies, True, False)
+        for projectile, enemies in sprite_dict.items():
+            for enemy in enemies:
+                enemy.hit(projectile.damage)
+                if enemy.health <= 0:
+                    self.enemies.remove(enemy)
                 break
+        
+        sprite_dict = pygame.sprite.groupcollide(self.projectiles, self.player, True, False)
+        for projectile, player in sprite_dict.items():
+            self.player.sprite.hit(projectile.damage)
+            if self.player.sprite.health <= 0:
+                pygame.quit()
+                exit()
+            break
     
     def draw(self, screen):
+        self.background.draw(screen)
         super().draw(screen)
-
-    @property
-    def entities(self):
-        return [self.background, self.player, *self.enemies, *self.projectiles]

@@ -1,11 +1,10 @@
-class Entity:
-    def __init__(self, surface, position):
-        self.surface = surface
-        self.rect = surface.get_rect()
-        self.rect.move_ip(position)
+from pygame.sprite import Sprite
+
+class Entity(Sprite):
+    def __init__(self, image):
+        Sprite.__init__(self)
+        self.image = image
+        self.rect = image.get_rect()
 
     def update(self, dt):
         pass
-
-    def draw(self, screen):
-        screen.blit(self.surface, self.rect)

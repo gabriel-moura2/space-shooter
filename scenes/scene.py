@@ -17,7 +17,3 @@ class Scene:
     def draw(self, screen):
         for entity in self.entities:
             entity.draw(screen)
-    
-    @property
-    def entities(self):
-        return []
