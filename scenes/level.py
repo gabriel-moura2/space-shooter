@@ -3,20 +3,23 @@ from scenes.scene import Scene
 from entities.background import Background
 from entities.enemy_ship import EnemyShip
 from entities.player_ship import PlayerShip
+from entities.explosion import ExplosionEffect
 from config import SCREEN_HEIGHT, SHIP_SPEED, SCREEN_WIDTH
 
 class LevelScene(Scene):
     def __init__(self, manager, level):
         super().__init__(manager)
         self.level = level
-        self.explosions = []
+        self.explosions = pygame.sprite.Group()
+        self.explosions.add(ExplosionEffect((SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)))
+        self.explosions.add(pygame.sprite.GroupSingle())
         self.enemies = pygame.sprite.Group()
         self.projectiles = pygame.sprite.Group()
         self.enemies.add(EnemyShip(SCREEN_HEIGHT / 2, 3))
         self.player = pygame.sprite.GroupSingle()
         self.player.add(PlayerShip())
         self.background = Background()
-        self.entities = [self.player, self.enemies, self.projectiles]
+        self.entities = [self.player, self.enemies, self.projectiles, self.explosions]
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -38,7 +41,7 @@ class LevelScene(Scene):
         super().update(dt)
         for projectile in self.projectiles.sprites():
             if projectile.rect.left < 0 or projectile.rect.right > SCREEN_WIDTH:
-                self.projectiles.remove(projectile)
+                projectile.kill()
 
         for enemy in self.enemies.sprites():
             view = (enemy.rect.centerx - SCREEN_WIDTH, enemy.rect.centery, enemy.rect.centerx, enemy.rect.centery)
@@ -51,13 +54,13 @@ class LevelScene(Scene):
             for enemy in enemies:
                 enemy.hit(projectile.damage)
                 if enemy.health <= 0:
-                    self.enemies.remove(enemy)
+                    enemy.kill()
                 break
         
         sprite_dict = pygame.sprite.groupcollide(self.projectiles, self.player, True, False)
         for projectile, player in sprite_dict.items():
-            self.player.sprite.hit(projectile.damage)
-            if self.player.sprite.health <= 0:
+            player[0].hit(projectile.damage)
+            if player[0].health <= 0:
                 pygame.quit()
                 exit()
             break
