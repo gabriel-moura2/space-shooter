@@ -34,6 +34,28 @@ class LevelScene(Scene):
         for projectile in self.projectiles:
             if projectile.rect.left < 0 or projectile.rect.right > SCREEN_WIDTH:
                 self.projectiles.remove(projectile)
+
+        for enemy in self.enemies:
+            view = (enemy.rect.centerx - SCREEN_WIDTH, enemy.rect.centery, enemy.rect.centerx, enemy.rect.centery)
+            if self.player.rect.clipline(view):
+                enemy.shoot()
+        
+        # Melhorar renderização depois
+        for projectile in self.projectiles:
+            for enemy in self.enemies:
+                if projectile.rect.colliderect(enemy.rect):
+                    self.projectiles.remove(projectile)
+                    enemy.hit(projectile.damage)
+                    if enemy.health <= 0:
+                        self.enemies.remove(enemy)
+                    break
+            if self.player.rect.colliderect(projectile.rect):
+                self.projectiles.remove(projectile)
+                self.player.hit(projectile.damage)
+                if self.player.health <= 0:
+                    pygame.quit()
+                    exit()
+                break
     
     def draw(self, screen):
         super().draw(screen)
