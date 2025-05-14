@@ -1,7 +1,7 @@
 from entities.space_ship import SpaceShip
 from entities.projectile import Projectile
 from utils.helpers import load_image
-from config import H_POSITION_PLAYER, SCREEN_HEIGHT, PROJECTILE_DELAY
+from config import H_POSITION_PLAYER, SCREEN_HEIGHT
 
 class PlayerShip(SpaceShip):
     def __init__(self, projectile_manager):
@@ -13,9 +13,7 @@ class PlayerShip(SpaceShip):
         super().update(dt)
 
     def shoot(self):
-         if self.cooldown <= 0:
-            self.projectile_manager.append(Projectile((self.rect.right, self.rect.centery), 1))
-            self.cooldown = PROJECTILE_DELAY
+        self.projectile_manager.append(Projectile((self.rect.right, self.rect.centery), 1))
     
     def draw(self, screen):
           super().draw(screen)

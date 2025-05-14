@@ -6,7 +6,6 @@ class SpaceShip(Entity):
         super().__init__(surface, position)
         self.health = HEALTH
         self.speed = 0
-        self.cooldown = 0
         self.projectile_manager = projectile_manager
 
     def hit(self, damage):
@@ -14,8 +13,6 @@ class SpaceShip(Entity):
 
     def update(self, dt):
         self.rect = self.rect.move(0, self.speed * dt)
-        if self.cooldown > 0: 
-            self.cooldown -= dt
 
     def draw(self, screen):
         super().draw(screen)
