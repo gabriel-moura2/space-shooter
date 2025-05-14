@@ -11,11 +11,10 @@ class LevelScene(Scene):
         super().__init__(manager)
         self.level = level
         self.explosions = pygame.sprite.Group()
-        self.explosions.add(ExplosionEffect((SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)))
         self.explosions.add(pygame.sprite.GroupSingle())
         self.enemies = pygame.sprite.Group()
         self.projectiles = pygame.sprite.Group()
-        self.enemies.add(EnemyShip(SCREEN_HEIGHT / 2, 3))
+        self.enemies.add(EnemyShip(SCREEN_HEIGHT / 2, 10))
         self.player = pygame.sprite.GroupSingle()
         self.player.add(PlayerShip())
         self.background = Background()
@@ -39,19 +38,20 @@ class LevelScene(Scene):
     def update(self, dt):
         self.background.update(dt)
         super().update(dt)
-        for projectile in self.projectiles.sprites():
+        for projectile in self.projectiles:
             if projectile.rect.left < 0 or projectile.rect.right > SCREEN_WIDTH:
                 projectile.kill()
 
-        for enemy in self.enemies.sprites():
+        for enemy in self.enemies:
             view = (enemy.rect.centerx - SCREEN_WIDTH, enemy.rect.centery, enemy.rect.centerx, enemy.rect.centery)
             if self.player.sprite.rect.clipline(view):
                 enemy.shoot(self.projectiles)
         
         # Melhorar renderização depois
-        sprite_dict =pygame.sprite.groupcollide(self.projectiles, self.enemies, True, False)
+        sprite_dict = pygame.sprite.groupcollide(self.projectiles, self.enemies, True, False)
         for projectile, enemies in sprite_dict.items():
             for enemy in enemies:
+                projectile.explode(self.explosions)
                 enemy.hit(projectile.damage)
                 if enemy.health <= 0:
                     enemy.kill()
@@ -59,11 +59,15 @@ class LevelScene(Scene):
         
         sprite_dict = pygame.sprite.groupcollide(self.projectiles, self.player, True, False)
         for projectile, player in sprite_dict.items():
+            projectile.explode(self.explosions)
             player[0].hit(projectile.damage)
             if player[0].health <= 0:
                 pygame.quit()
                 exit()
             break
+
+        if len(self.enemies) == 0:
+            self.manager.change_scene(LevelScene(self.manager, self.level + 1))
     
     def draw(self, screen):
         self.background.draw(screen)

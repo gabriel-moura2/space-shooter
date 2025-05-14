@@ -1,4 +1,5 @@
 from entities.entity import Entity
+from entities.explosion import ExplosionEffect
 from utils.helpers import load_image
 from config import PROJECTILE_SPEED, PROJECTILE_DAMAGE
 
@@ -15,4 +16,6 @@ class Projectile(Entity):
     
     def update(self, dt):
         self.rect = self.rect.move(self.direction * PROJECTILE_SPEED * dt, 0)
-
+    
+    def explode(self, explosions):
+        explosions.add(ExplosionEffect(self.rect.center))

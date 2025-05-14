@@ -10,9 +10,9 @@ class ExplosionEffect(Entity):
         self.frame = 0
 
     def update(self, dt):
-        self.frame += dt
+        self.frame += 1
         if self.frame > 5:
-            self.frame = 0
+            self.kill()
             return
         self.image.blit(self.spritesheet, (0, 0), (int(self.frame) * 36, 0, 36, 36))
     
