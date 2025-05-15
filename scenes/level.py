@@ -3,7 +3,6 @@ from scenes.scene import Scene
 from entities.background import Background
 from entities.enemy_ship import EnemyShip
 from entities.player_ship import PlayerShip
-from entities.explosion import ExplosionEffect
 from utils.helpers import generate_partitions
 from config import SCREEN_HEIGHT, SHIP_SPEED, SCREEN_WIDTH
 

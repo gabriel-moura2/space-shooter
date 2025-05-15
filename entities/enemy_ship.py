@@ -3,14 +3,19 @@ import colorsys
 from entities.space_ship import SpaceShip
 from entities.projectile import Projectile
 from utils.helpers import load_image
-from config import H_POSITION_ENEMY, SHIP_SPEED, SCREEN_HEIGHT, PROJECTILE_DELAY, PROJECTILE_SPEED, PROJECTILE_DAMAGE
+from config import H_POSITION_ENEMY, SHIP_SPEED, SCREEN_HEIGHT, PROJECTILE_DELAY, PROJECTILE_SPEED, PROJECTILE_DAMAGE, HEALTH
 
 class EnemyShip(SpaceShip):
     def __init__(self, position, type):
         super().__init__(load_image("enemy"), (H_POSITION_ENEMY, position))
-        self.speed = SHIP_SPEED
         self.cooldown = 0
         type_bit = f'{(type-1):06b}'
+        self.projectile_config = {
+            'damage': PROJECTILE_DAMAGE * (int(type_bit[-1]) + 1),
+            'speed': PROJECTILE_SPEED * (int(type_bit[-2]) + 1)
+        }
+        self.speed = SHIP_SPEED * (int(type_bit[-3]) + 1)
+        self.health = HEALTH * (int(type_bit[-4]) + 1)
         pxarray = PixelArray(self.image)
         color1 = 255 - int(type_bit[-6:-4], 2) * 85, 255 - int(type_bit[-4:-2], 2) * 85, 255 - int(type_bit[-2:], 2) * 85
         hsv = colorsys.rgb_to_hsv(color1[0] / 255, color1[1] / 255, color1[2] / 255)
@@ -22,7 +27,7 @@ class EnemyShip(SpaceShip):
 
     def shoot(self, projectiles):
          if self.cooldown <= 0:
-            projectiles.add(Projectile((self.rect.left, self.rect.centery), -1, PROJECTILE_DAMAGE, PROJECTILE_SPEED))
+            projectiles.add(Projectile((self.rect.left, self.rect.centery), -1, self.projectile_config['damage'], self.projectile_config['speed']))
             self.cooldown = PROJECTILE_DELAY
 
     def update(self, dt):
