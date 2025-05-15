@@ -10,8 +10,7 @@ class Background:
         for y in range(0, self.surface.get_height(), self.img_height):
             for x in range(0, self.surface.get_width(), self.img_width):
                 self.surface.blit(self.img, (x, y))
-        self.scroll_speed = SCROLL_SPEED
-        # self.scroll_speed = 0
+        self.scroll_speed = 0
         self.scroll_x = 0
 
     def update(self, dt):

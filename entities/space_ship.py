@@ -1,4 +1,5 @@
 from entities.entity import Entity
+from entities.explosion import ExplosionEffect
 from config import HEALTH
 
 class SpaceShip(Entity):
@@ -11,3 +12,6 @@ class SpaceShip(Entity):
 
     def update(self, dt):
         self.rect = self.rect.move(0, self.speed * dt)
+
+    def explode(self, explosions):
+        explosions.add(ExplosionEffect(self.rect.center, 12))

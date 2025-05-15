@@ -1,6 +1,5 @@
 import pygame
 from scenes.scene import Scene
-from scenes.level import LevelScene
 from entities.text import Text
 from config import MENU_BACKGROUND_COLOR
 from config import TITLE_X, TITLE_Y, TITLE_SIZE, TITLE_COLOR, HINT_X, HINT_Y, HINT_SIZE, HINT_COLOR
@@ -20,6 +19,7 @@ class MenuScene(Scene):
                 pygame.quit()
                 exit()
             if (event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE):
+                from scenes.level import LevelScene
                 self.manager.change_scene(LevelScene(self.manager, 1))
     
     def update(self, dt):

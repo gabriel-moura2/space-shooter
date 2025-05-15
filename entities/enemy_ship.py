@@ -3,21 +3,21 @@ import colorsys
 from entities.space_ship import SpaceShip
 from entities.projectile import Projectile
 from utils.helpers import load_image
-from config import H_POSITION_ENEMY, SHIP_SPEED, SCREEN_HEIGHT, PROJECTILE_DELAY, PROJECTILE_SPEED, PROJECTILE_DAMAGE, HEALTH
+from config import H_POSITION_ENEMY, SHIP_SPEED, SCREEN_HEIGHT, SCREEN_WIDTH, PROJECTILE_DELAY, PROJECTILE_SPEED, PROJECTILE_DAMAGE, HEALTH
 
 class EnemyShip(SpaceShip):
     def __init__(self, position, type):
         super().__init__(load_image("enemy"), (H_POSITION_ENEMY, position))
         self.cooldown = 0
-        type_bit = f'{(type-1):06b}'
         self.projectile_config = {
-            'damage': PROJECTILE_DAMAGE * (int(type_bit[-1]) + 1),
-            'speed': PROJECTILE_SPEED * (int(type_bit[-2]) + 1)
+            'damage': PROJECTILE_DAMAGE * ((type & 1) + 1),
+            'speed': PROJECTILE_SPEED * ((type >> 1 & 1) + 1)
         }
-        self.speed = SHIP_SPEED * (int(type_bit[-3]) + 1)
-        self.health = HEALTH * (int(type_bit[-4]) + 1)
+        self.speed = SHIP_SPEED * ((type >> 2 & 1) + 1)
+        self.health = HEALTH * ((type >> 3 & 1) + 1)
+        self.double_shot = bool(type >> 4 & 1)
         pxarray = PixelArray(self.image)
-        color1 = 255 - int(type_bit[-6:-4], 2) * 85, 255 - int(type_bit[-4:-2], 2) * 85, 255 - int(type_bit[-2:], 2) * 85
+        color1 = 255 - (type >> 4) * 85, 255 - (type >> 2 & 3) * 85, 255 - (type & 3) * 85
         hsv = colorsys.rgb_to_hsv(color1[0] / 255, color1[1] / 255, color1[2] / 255)
         rgb = colorsys.hsv_to_rgb((hsv[0] - (1/9)) % 1, hsv[1], hsv[2] / 3)
         color2 = int(rgb[0] * 255), int(rgb[1] * 255), int(rgb[2] * 255)

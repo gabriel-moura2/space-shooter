@@ -54,6 +54,7 @@ class LevelScene(Scene):
                 projectile.explode(self.explosions)
                 enemy.hit(projectile.damage)
                 if enemy.health <= 0:
+                    enemy.explode(self.explosions)
                     enemy.kill()
                 break
         
@@ -62,8 +63,8 @@ class LevelScene(Scene):
             projectile.explode(self.explosions)
             player[0].hit(projectile.damage)
             if player[0].health <= 0:
-                pygame.quit()
-                exit()
+                player[0].explode(self.explosions)
+                player[0].kill()
             break
 
         if len(self.enemies) == 0:
@@ -71,10 +72,14 @@ class LevelScene(Scene):
             if self.stage_partitions:
                 enemy_types = self.stage_partitions.pop(0)
                 for i in range(len(enemy_types)):
-                    enemy_type = enemy_types[i]
+                    enemy_type = enemy_types[i]-1
                     self.enemies.add(EnemyShip((SCREEN_HEIGHT * (i + 1) / (len(enemy_types) + 1)), enemy_type))
             else:
                 self.manager.change_scene(LevelScene(self.manager, self.level + 1))
+
+        if len(self.player) == 0:
+            from scenes.game_over import GameOverScene
+            self.manager.change_scene(GameOverScene(self.manager, self.level))
     
     def draw(self, screen):
         self.background.draw(screen)

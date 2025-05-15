@@ -18,4 +18,4 @@ class Projectile(Entity):
         self.rect = self.rect.move(self.direction * self.speed * dt, 0)
     
     def explode(self, explosions):
-        explosions.add(ExplosionEffect(self.rect.center))
+        explosions.add(ExplosionEffect(self.rect.center, 36))
