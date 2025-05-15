@@ -4,17 +4,18 @@ from entities.background import Background
 from entities.enemy_ship import EnemyShip
 from entities.player_ship import PlayerShip
 from entities.explosion import ExplosionEffect
+from utils.helpers import generate_partitions
 from config import SCREEN_HEIGHT, SHIP_SPEED, SCREEN_WIDTH
 
 class LevelScene(Scene):
     def __init__(self, manager, level):
         super().__init__(manager)
         self.level = level
+        self.stage_partitions = generate_partitions(self.level, 6)
         self.explosions = pygame.sprite.Group()
         self.explosions.add(pygame.sprite.GroupSingle())
         self.enemies = pygame.sprite.Group()
         self.projectiles = pygame.sprite.Group()
-        self.enemies.add(EnemyShip(SCREEN_HEIGHT / 2, 10))
         self.player = pygame.sprite.GroupSingle()
         self.player.add(PlayerShip())
         self.background = Background()
@@ -67,7 +68,14 @@ class LevelScene(Scene):
             break
 
         if len(self.enemies) == 0:
-            self.manager.change_scene(LevelScene(self.manager, self.level + 1))
+            print(self.stage_partitions)
+            if self.stage_partitions:
+                enemy_types = self.stage_partitions.pop(0)
+                for i in range(len(enemy_types)):
+                    enemy_type = enemy_types[i]
+                    self.enemies.add(EnemyShip((SCREEN_HEIGHT * (i + 1) / (len(enemy_types) + 1)), enemy_type))
+            else:
+                self.manager.change_scene(LevelScene(self.manager, self.level + 1))
     
     def draw(self, screen):
         self.background.draw(screen)

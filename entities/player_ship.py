@@ -1,7 +1,7 @@
 from entities.space_ship import SpaceShip
 from entities.projectile import Projectile
 from utils.helpers import load_image
-from config import H_POSITION_PLAYER, SCREEN_HEIGHT
+from config import H_POSITION_PLAYER, SCREEN_HEIGHT, PROJECTILE_SPEED, PROJECTILE_DAMAGE
 
 class PlayerShip(SpaceShip):
     def __init__(self):
@@ -13,4 +13,4 @@ class PlayerShip(SpaceShip):
         super().update(dt)
 
     def shoot(self, projectiles):
-        projectiles.add(Projectile((self.rect.right, self.rect.centery), 1))
+        projectiles.add(Projectile((self.rect.right, self.rect.centery), 1, PROJECTILE_DAMAGE, PROJECTILE_SPEED))
