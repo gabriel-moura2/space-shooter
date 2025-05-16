@@ -20,7 +20,7 @@ pip install pygame
 ```
 3. Clone este repositório:
 ```bash
-git clone https://github.com/seu-usuario/space-shooter.git
+git clone https://github.com/gabriel-moura2/space-shooter.git
 cd space-shooter
 ```
 4. Execute o jogo:
