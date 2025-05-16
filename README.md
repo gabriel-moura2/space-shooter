@@ -1,6 +1,6 @@
-# Space Shooter
+# Galactic Onslaught
 
-**Space Shooter** é um jogo arcade 2D desenvolvido com [Pygame](https://www.pygame.org/), no qual o jogador controla uma pequena nave espacial que se move verticalmente para desviar de inimigos e destruir naves oponentes. O objetivo é sobreviver pelo maior número de fases possível, enfrentando desafios progressivamente mais difíceis.
+**Galactic Onslaught** é um jogo arcade 2D desenvolvido com [Pygame](https://www.pygame.org/), no qual o jogador controla uma pequena nave espacial que se move verticalmente para desviar de inimigos e destruir naves oponentes. O objetivo é sobreviver pelo maior número de fases possível, enfrentando desafios progressivamente mais difíceis.
 
 Este projeto foi criado como uma prática de desenvolvimento e gerenciamento de projetos, e está atualmente em desenvolvimento.
 
