@@ -10,11 +10,11 @@ class EnemyShip(SpaceShip):
         super().__init__(load_image("enemy"), (H_POSITION_ENEMY, position))
         self.cooldown = 0
         self.projectile_config = {
-            'damage': PROJECTILE_DAMAGE * ((type & 1) + 1),
+            'damage': PROJECTILE_DAMAGE * ((type >> 2 & 1) + 1),
             'speed': PROJECTILE_SPEED * ((type >> 1 & 1) + 1)
         }
-        self.speed = SHIP_SPEED * ((type >> 2 & 1) + 1)
-        self.health = HEALTH * ((type >> 3 & 1) + 1)
+        self.speed = SHIP_SPEED * ((type >> 3 & 1) + 1)
+        self.health = HEALTH * ((type & 1) + 1)
         self.double_shot = bool(type >> 4 & 1)
         pxarray = PixelArray(self.image)
         color1 = 255 - (type >> 4) * 85, 255 - (type >> 2 & 3) * 85, 255 - (type & 3) * 85

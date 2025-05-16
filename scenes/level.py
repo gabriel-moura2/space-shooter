@@ -1,10 +1,12 @@
 import pygame
 from scenes.scene import Scene
-from entities.background import Background
+from entities.background import SpaceBackground
 from entities.enemy_ship import EnemyShip
 from entities.player_ship import PlayerShip
+from entities.text import Text
+from entities.life import Life
 from utils.helpers import generate_partitions
-from config import SCREEN_HEIGHT, SHIP_SPEED, SCREEN_WIDTH
+from config import SCREEN_HEIGHT, SHIP_SPEED, SCREEN_WIDTH, LEVEL_X, LEVEL_Y, LEVEL_SIZE, LEVEL_COLOR
 
 class LevelScene(Scene):
     def __init__(self, manager, level):
@@ -17,8 +19,12 @@ class LevelScene(Scene):
         self.projectiles = pygame.sprite.Group()
         self.player = pygame.sprite.GroupSingle()
         self.player.add(PlayerShip())
-        self.background = Background()
-        self.entities = [self.player, self.enemies, self.projectiles, self.explosions]
+        self.texts = pygame.sprite.Group()
+        self.texts.add(Text((LEVEL_X, LEVEL_Y), f"Level {self.level}", LEVEL_SIZE, LEVEL_COLOR))
+        self.lifes = pygame.sprite.Group()
+        self.lifes.add(Life(self.player.sprite))
+        self.background = SpaceBackground()
+        self.entities = [self.texts, self.lifes, self.player, self.enemies, self.projectiles, self.explosions]
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -73,7 +79,9 @@ class LevelScene(Scene):
                 enemy_types = self.stage_partitions.pop(0)
                 for i in range(len(enemy_types)):
                     enemy_type = enemy_types[i]-1
-                    self.enemies.add(EnemyShip((SCREEN_HEIGHT * (i + 1) / (len(enemy_types) + 1)), enemy_type))
+                    enemy = EnemyShip((SCREEN_HEIGHT * (i + 1) / (len(enemy_types) + 1)), enemy_type)
+                    self.enemies.add(enemy)
+                    self.lifes.add(Life(enemy))
             else:
                 self.manager.change_scene(LevelScene(self.manager, self.level + 1))
 

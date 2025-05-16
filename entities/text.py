@@ -7,3 +7,6 @@ class Text(Entity):
 		self.color = color
 		super().__init__(self.font.render(text, True, color))
 		self.rect.center = position
+
+	def text(self, text):
+		self.image = self.font.render(text, True, self.color)

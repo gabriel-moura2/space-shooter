@@ -1,7 +1,7 @@
 import pygame
 from config import SCREEN_WIDTH, SCREEN_HEIGHT, SCROLL_SPEED
 
-class Background:
+class SpaceBackground:
     def __init__(self):
         self.img = pygame.image.load("assets/sprites/space.png").convert()
         self.img_width = self.img.get_width()
@@ -10,7 +10,7 @@ class Background:
         for y in range(0, self.surface.get_height(), self.img_height):
             for x in range(0, self.surface.get_width(), self.img_width):
                 self.surface.blit(self.img, (x, y))
-        self.scroll_speed = 0
+        self.scroll_speed = SCROLL_SPEED
         self.scroll_x = 0
 
     def update(self, dt):
