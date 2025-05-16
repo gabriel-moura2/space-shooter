@@ -24,7 +24,7 @@ class LevelScene(Scene):
         self.lifes = pygame.sprite.Group()
         self.lifes.add(Life(self.player.sprite))
         self.background = SpaceBackground()
-        self.entities = [self.texts, self.lifes, self.player, self.enemies, self.projectiles, self.explosions]
+        self.entities = [self.texts, self.player, self.lifes, self.enemies, self.projectiles, self.explosions]
 
     def handle_events(self):
         for event in pygame.event.get():

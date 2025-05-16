@@ -3,7 +3,7 @@ from config import SCREEN_WIDTH, SCREEN_HEIGHT, SCROLL_SPEED
 
 class SpaceBackground:
     def __init__(self):
-        self.img = pygame.image.load("assets/sprites/space.png").convert()
+        self.img = pygame.image.load("assets/images/space.png").convert()
         self.img_width = self.img.get_width()
         self.img_height = self.img.get_height()
         self.surface = pygame.Surface((SCREEN_WIDTH + self.img_width, SCREEN_HEIGHT + self.img_height))

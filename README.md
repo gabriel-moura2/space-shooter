@@ -4,6 +4,10 @@
 
 Este projeto foi criado como uma prática de desenvolvimento e gerenciamento de projetos, e está atualmente em desenvolvimento.
 
+## Pré-visualização
+
+![til](./assets/images/pre-visualização.gif)
+
 ## Funcionalidades
 
 - Controles simples (movimento vertical com as setas e disparo com espaço)
