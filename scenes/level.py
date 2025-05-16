@@ -13,6 +13,7 @@ class LevelScene(Scene):
         super().__init__(manager)
         self.level = level
         self.stage_partitions = generate_partitions(self.level, 6)
+        self.stage = 0
         self.explosions = pygame.sprite.Group()
         self.explosions.add(pygame.sprite.GroupSingle())
         self.enemies = pygame.sprite.Group()
@@ -74,8 +75,9 @@ class LevelScene(Scene):
             break
 
         if len(self.enemies) == 0:
-            if self.stage_partitions:
-                enemy_types = self.stage_partitions.pop(0)
+            if self.stage < len(self.stage_partitions):
+                enemy_types = self.stage_partitions[self.stage]
+                self.stage += 1
                 for i in range(len(enemy_types)):
                     enemy_type = enemy_types[i]-1
                     enemy = EnemyShip((SCREEN_HEIGHT * (i + 1) / (len(enemy_types) + 1)), enemy_type)
@@ -86,7 +88,7 @@ class LevelScene(Scene):
 
         if len(self.player) == 0:
             from scenes.game_over import GameOverScene
-            self.manager.change_scene(GameOverScene(self.manager, self.level))
+            self.manager.change_scene(GameOverScene(self.manager, f"#{self.level}.{self.stage}"))
     
     def draw(self, screen):
         self.background.draw(screen)
