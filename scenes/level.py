@@ -2,6 +2,7 @@ import pygame
 from scenes.scene import Scene
 from entities.background import SpaceBackground
 from entities.enemy_ship import EnemyShip
+from entities.double_shot_enemy_ship import DoubleShotEnemyShip
 from entities.player_ship import PlayerShip
 from entities.text import Text
 from entities.life import Life
@@ -50,9 +51,17 @@ class LevelScene(Scene):
                 projectile.kill()
 
         for enemy in self.enemies:
-            view = (enemy.rect.centerx - SCREEN_WIDTH, enemy.rect.centery, enemy.rect.centerx, enemy.rect.centery)
-            if self.player.sprite.rect.clipline(view):
-                enemy.shoot(self.projectiles)
+            if type(enemy) == DoubleShotEnemyShip:
+                view = (enemy.rect.centerx - SCREEN_WIDTH, enemy.rect.top, enemy.rect.centerx, enemy.rect.top)
+                if self.player.sprite.rect.clipline(view):
+                    enemy.shoot(self.projectiles)
+                view2 = (enemy.rect.centerx - SCREEN_WIDTH, enemy.rect.bottom, enemy.rect.centerx, enemy.rect.bottom)
+                if self.player.sprite.rect.clipline(view2):
+                    enemy.shoot2(self.projectiles)
+            else:
+                view = (enemy.rect.centerx - SCREEN_WIDTH, enemy.rect.centery, enemy.rect.centerx, enemy.rect.centery)
+                if self.player.sprite.rect.clipline(view):
+                    enemy.shoot(self.projectiles)
         
         # Melhorar renderização depois
         sprite_dict = pygame.sprite.groupcollide(self.projectiles, self.enemies, True, False)
@@ -80,7 +89,10 @@ class LevelScene(Scene):
                 self.stage += 1
                 for i in range(len(enemy_types)):
                     enemy_type = enemy_types[i]-1
-                    enemy = EnemyShip((SCREEN_HEIGHT * (i + 1) / (len(enemy_types) + 1)), enemy_type)
+                    if enemy_type >> 4 & 1 == 0:
+                        enemy = EnemyShip(SCREEN_HEIGHT * (i + 1) / (len(enemy_types) + 1), enemy_type)
+                    else:
+                        enemy = DoubleShotEnemyShip(SCREEN_HEIGHT * (i + 1) / (len(enemy_types) + 1), enemy_type)
                     self.enemies.add(enemy)
                     self.lifes.add(Life(enemy))
             else:

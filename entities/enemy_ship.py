@@ -15,7 +15,6 @@ class EnemyShip(SpaceShip):
         }
         self.speed = SHIP_SPEED * ((type >> 3 & 1) + 1)
         self.health = HEALTH * ((type & 1) + 1)
-        self.double_shot = bool(type >> 4 & 1)
         pxarray = PixelArray(self.image)
         color1 = 255 - (type >> 4) * 85, 255 - (type >> 2 & 3) * 85, 255 - (type & 3) * 85
         hsv = colorsys.rgb_to_hsv(color1[0] / 255, color1[1] / 255, color1[2] / 255)

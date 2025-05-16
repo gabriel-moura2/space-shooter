@@ -25,7 +25,7 @@ def generate_partitions(target_sum, max_parts):
                 current_partition.pop()
     
     backtrack(target_sum, target_sum, [], max_parts)
-    partitions.sort(reverse=True, key=len)
+    partitions.sort(key=len)
     return partitions
 
 if __name__ == "__main__":
