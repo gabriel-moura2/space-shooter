@@ -1,6 +1,7 @@
 from entities.entity import Entity
 from entities.explosion import ExplosionEffect
 from utils.helpers import load_image
+from utils.helpers import load_sound
 
 class Projectile(Entity):
     def __init__(self, position, direction, damage, speed):
@@ -13,6 +14,7 @@ class Projectile(Entity):
         self.rect.centery = position[1]
         self.damage = damage
         self.speed = speed
+        load_sound("laser").play()
     
     def update(self, dt):
         self.rect = self.rect.move(self.direction * self.speed * dt, 0)

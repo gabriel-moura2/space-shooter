@@ -3,7 +3,7 @@ import colorsys
 from entities.space_ship import SpaceShip
 from entities.projectile import Projectile
 from utils.helpers import load_image
-from config import H_POSITION_ENEMY, SHIP_SPEED, SCREEN_HEIGHT, SCREEN_WIDTH, PROJECTILE_DELAY, PROJECTILE_SPEED, PROJECTILE_DAMAGE, HEALTH
+from config import H_POSITION_ENEMY, SHIP_SPEED, SCREEN_HEIGHT, PROJECTILE_DELAY, PROJECTILE_SPEED, PROJECTILE_DAMAGE, HEALTH
 
 class EnemyShip(SpaceShip):
     def __init__(self, position, type):

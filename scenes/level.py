@@ -74,7 +74,6 @@ class LevelScene(Scene):
             break
 
         if len(self.enemies) == 0:
-            print(self.stage_partitions)
             if self.stage_partitions:
                 enemy_types = self.stage_partitions.pop(0)
                 for i in range(len(enemy_types)):

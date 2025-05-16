@@ -1,6 +1,6 @@
 from pygame import Surface, SRCALPHA
 from entities.entity import Entity
-from utils.helpers import load_image
+from utils.helpers import load_image, load_sound
 
 class ExplosionEffect(Entity):
     def __init__(self, position, frame_speed):
@@ -9,6 +9,7 @@ class ExplosionEffect(Entity):
         self.rect.center = position
         self.frame = 0
         self.frame_speed = frame_speed
+        load_sound("hit").play()
 
     def update(self, dt):
         self.frame += self.frame_speed * dt
