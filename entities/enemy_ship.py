@@ -7,7 +7,7 @@ from config import H_POSITION_ENEMY, SHIP_SPEED, SCREEN_HEIGHT, PROJECTILE_DELAY
 
 class EnemyShip(SpaceShip):
     def __init__(self, position, type):
-        super().__init__(load_image("enemy"), (H_POSITION_ENEMY, position))
+        super().__init__(load_image("enemy"), position)
         self.cooldown = 0
         self.projectile_config = {
             'damage': PROJECTILE_DAMAGE * ((type >> 2 & 1) + 1),
@@ -30,6 +30,9 @@ class EnemyShip(SpaceShip):
             self.cooldown = PROJECTILE_DELAY
 
     def update(self, dt):
+        if self.rect.x > H_POSITION_ENEMY:
+            self.rect = self.rect.move(-SHIP_SPEED * dt, 0)
+            return
         super().update(dt)
         if self.rect.top < 0 or self.rect.bottom > SCREEN_HEIGHT:
             self.speed = -self.speed
