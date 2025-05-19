@@ -7,25 +7,30 @@ from entities.player_ship import PlayerShip
 from entities.text import Text
 from entities.life import Life
 from utils.helpers import generate_partitions
-from config import SCREEN_HEIGHT, SHIP_SPEED, H_POSITION_PLAYER, H_POSITION_ENEMY, SCREEN_WIDTH, LEVEL_X, LEVEL_Y, LEVEL_SIZE, LEVEL_COLOR
+from config import SCREEN_HEIGHT, SHIP_SPEED, H_POSITION_PLAYER, H_POSITION_ENEMY, SCREEN_WIDTH, LEVEL_DISPLAY_CONFIG
 
 class LevelScene(Scene):
     def __init__(self, manager, level):
         super().__init__(manager)
         self.level = level
-        self.stage_partitions = generate_partitions(self.level, 6)
+        self._init_level_structure()
+        self._init_game_objects()
+
+    def _init_level_structure(self):
+        self.enemy_wave_config = generate_partitions(self.level, 7)
         self.stage = 0
-        self.explosions = pygame.sprite.Group()
-        self.explosions.add(pygame.sprite.GroupSingle())
+
+    def _init_game_objects(self):
         self.enemies = pygame.sprite.Group()
         self.projectiles = pygame.sprite.Group()
         self.player = pygame.sprite.GroupSingle()
         self.player.add(PlayerShip())
-        self.texts = pygame.sprite.Group()
-        self.texts.add(Text((LEVEL_X, LEVEL_Y), f"Level {self.level}", LEVEL_SIZE, LEVEL_COLOR))
         self.lifes = pygame.sprite.Group()
         self.lifes.add(Life(self.player.sprite))
+        self.explosions = pygame.sprite.Group()
+        self.explosions.add(pygame.sprite.GroupSingle())
         self.background = SpaceBackground()
+        self.texts = pygame.sprite.Group(Text(**LEVEL_DISPLAY_CONFIG, text=f"Level {self.level}"))
         self.entities = [self.texts, self.player, self.lifes, self.enemies, self.projectiles, self.explosions]
 
     def handle_events(self):
@@ -84,8 +89,8 @@ class LevelScene(Scene):
             break
 
         if len(self.enemies) == 0:
-            if self.stage < len(self.stage_partitions):
-                enemy_types = self.stage_partitions[self.stage]
+            if self.stage < len(self.enemy_wave_config):
+                enemy_types = self.enemy_wave_config[self.stage]
                 self.stage += 1
                 for i in range(len(enemy_types)):
                     enemy_type = enemy_types[i]-1
