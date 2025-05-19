@@ -21,17 +21,16 @@ class LevelScene(Scene):
         self.stage = 0
 
     def _init_game_objects(self):
-        self.enemies = pygame.sprite.Group()
-        self.projectiles = pygame.sprite.Group()
-        self.player = pygame.sprite.GroupSingle()
-        self.player.add(PlayerShip())
-        self.lifes = pygame.sprite.Group()
-        self.lifes.add(Life(self.player.sprite))
-        self.explosions = pygame.sprite.Group()
-        self.explosions.add(pygame.sprite.GroupSingle())
+        self.sprite_groups = {
+            "enemies": pygame.sprite.Group(),
+            "projectiles": pygame.sprite.Group(),
+            "player": pygame.sprite.GroupSingle(PlayerShip()),
+            "lifes": pygame.sprite.Group(),
+            "explosions": pygame.sprite.Group(),
+            "texts": pygame.sprite.Group(Text(**LEVEL_DISPLAY_CONFIG, text=f"Level {self.level}"))
+        }
+        self.sprite_groups["lifes"].add(Life(self.sprite_groups["player"].sprite))
         self.background = SpaceBackground()
-        self.texts = pygame.sprite.Group(Text(**LEVEL_DISPLAY_CONFIG, text=f"Level {self.level}"))
-        self.entities = [self.texts, self.player, self.lifes, self.enemies, self.projectiles, self.explosions]
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -39,56 +38,56 @@ class LevelScene(Scene):
                 pygame.quit()
                 exit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                self.player.sprite.shoot(self.projectiles)
+                self.sprite_groups["player"].sprite.shoot(self.sprite_groups["projectiles"])
         pressed_keys = pygame.key.get_pressed()
         if (pressed_keys[pygame.K_w] or pressed_keys[pygame.K_UP]):
-            self.player.sprite.speed = -SHIP_SPEED * 2
+            self.sprite_groups["player"].sprite.speed = -SHIP_SPEED * 2
         elif (pressed_keys[pygame.K_s] or pressed_keys[pygame.K_DOWN]):
-            self.player.sprite.speed = SHIP_SPEED * 2
+            self.sprite_groups["player"].sprite.speed = SHIP_SPEED * 2
         else:
-            self.player.sprite.speed = 0
+            self.sprite_groups["player"].sprite.speed = 0
     
     def update(self, dt):
         self.background.update(dt)
         super().update(dt)
-        for projectile in self.projectiles:
+        for projectile in self.sprite_groups["projectiles"]:
             if projectile.rect.left < 0 or projectile.rect.right > SCREEN_WIDTH:
                 projectile.kill()
 
-        for enemy in self.enemies:
+        for enemy in self.sprite_groups["enemies"]:
             if type(enemy) == DoubleShotEnemyShip:
                 view = (enemy.rect.centerx - (H_POSITION_ENEMY - H_POSITION_PLAYER), enemy.rect.top, enemy.rect.centerx, enemy.rect.top)
-                if self.player.sprite.rect.clipline(view):
-                    enemy.shoot(self.projectiles)
+                if self.sprite_groups["player"].sprite.rect.clipline(view):
+                    enemy.shoot(self.sprite_groups["projectiles"])
                 view2 = (enemy.rect.centerx - (H_POSITION_ENEMY - H_POSITION_PLAYER), enemy.rect.bottom, enemy.rect.centerx, enemy.rect.bottom)
-                if self.player.sprite.rect.clipline(view2):
-                    enemy.shoot2(self.projectiles)
+                if self.sprite_groups["player"].sprite.rect.clipline(view2):
+                    enemy.shoot2(self.sprite_groups["projectiles"])
             else:
                 view = (enemy.rect.centerx - (H_POSITION_ENEMY - H_POSITION_PLAYER), enemy.rect.centery, enemy.rect.centerx, enemy.rect.centery)
-                if self.player.sprite.rect.clipline(view):
-                    enemy.shoot(self.projectiles)
+                if self.sprite_groups["player"].sprite.rect.clipline(view):
+                    enemy.shoot(self.sprite_groups["projectiles"])
         
         # Melhorar renderização depois
-        sprite_dict = pygame.sprite.groupcollide(self.projectiles, self.enemies, True, False)
+        sprite_dict = pygame.sprite.groupcollide(self.sprite_groups["projectiles"], self.sprite_groups["enemies"], True, False)
         for projectile, enemies in sprite_dict.items():
             for enemy in enemies:
-                projectile.explode(self.explosions)
+                projectile.explode(self.sprite_groups["explosions"])
                 enemy.hit(projectile.damage)
                 if enemy.health <= 0:
-                    enemy.explode(self.explosions)
+                    enemy.explode(self.sprite_groups["explosions"])
                     enemy.kill()
                 break
         
-        sprite_dict = pygame.sprite.groupcollide(self.projectiles, self.player, True, False)
+        sprite_dict = pygame.sprite.groupcollide(self.sprite_groups["projectiles"], self.sprite_groups["player"], True, False)
         for projectile, player in sprite_dict.items():
-            projectile.explode(self.explosions)
+            projectile.explode(self.sprite_groups["explosions"])
             player[0].hit(projectile.damage)
             if player[0].health <= 0:
-                player[0].explode(self.explosions)
+                player[0].explode(self.sprite_groups["explosions"])
                 player[0].kill()
             break
 
-        if len(self.enemies) == 0:
+        if len(self.sprite_groups["enemies"]) == 0:
             if self.stage < len(self.enemy_wave_config):
                 enemy_types = self.enemy_wave_config[self.stage]
                 self.stage += 1
@@ -98,12 +97,12 @@ class LevelScene(Scene):
                         enemy = EnemyShip((SCREEN_WIDTH + H_POSITION_PLAYER, SCREEN_HEIGHT * (i + 1) / (len(enemy_types) + 1)), enemy_type)
                     else:
                         enemy = DoubleShotEnemyShip((SCREEN_WIDTH + H_POSITION_PLAYER, SCREEN_HEIGHT * (i + 1) / (len(enemy_types) + 1)), enemy_type)
-                    self.enemies.add(enemy)
-                    self.lifes.add(Life(enemy))
+                    self.sprite_groups["enemies"].add(enemy)
+                    self.sprite_groups["lifes"].add(Life(enemy))
             else:
                 self.manager.change_scene(LevelScene(self.manager, self.level + 1))
 
-        if len(self.player) == 0:
+        if len(self.sprite_groups["player"]) == 0:
             from scenes.game_over import GameOverScene
             self.manager.change_scene(GameOverScene(self.manager, f"#{self.level}.{self.stage}"))
     

@@ -8,10 +8,9 @@ from config import TITLE_DISPLAY_CONFIG, START_DISPLAY_CONFIG
 class MenuScene(Scene):
     def __init__(self, manager):
         super().__init__(manager)
-        self.texts = pygame.sprite.Group()
-        self.texts.add(Text(**TITLE_DISPLAY_CONFIG))
-        self.texts.add(Text(**START_DISPLAY_CONFIG))
-        self.entities = [self.texts]
+        self.sprite_groups = {
+            "texts": pygame.sprite.Group(Text(**TITLE_DISPLAY_CONFIG), Text(**START_DISPLAY_CONFIG))
+        }
 
     def handle_events(self):
         for event in pygame.event.get():

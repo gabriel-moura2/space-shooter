@@ -6,11 +6,13 @@ from config import GAME_OVER_DISPLAY_CONFIG, SCORE_DISPLAY_CONFIG, TO_MENU_DISPL
 class GameOverScene(Scene):
     def __init__(self, manager, score):
         super().__init__(manager)
-        self.texts = pygame.sprite.Group()
-        self.texts.add(Text(**GAME_OVER_DISPLAY_CONFIG))
-        self.texts.add(Text(**SCORE_DISPLAY_CONFIG, text=f"Score {score}"))
-        self.texts.add(Text(**TO_MENU_DISPLAY_CONFIG))
-        self.entities = [self.texts]
+        self.sprite_groups = {
+            "texts": pygame.sprite.Group(
+                Text(**GAME_OVER_DISPLAY_CONFIG),
+                Text(**SCORE_DISPLAY_CONFIG, text=f"Score {score}"),
+                Text(**TO_MENU_DISPLAY_CONFIG)
+            )
+        }
 
     def handle_events(self):
         for event in pygame.event.get():

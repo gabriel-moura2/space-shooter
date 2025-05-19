@@ -11,9 +11,9 @@ class Scene:
                 exit()
     
     def update(self, dt):
-        for entity in self.entities:
-            entity.update(dt)
+        for group in self.sprite_groups.values():
+            group.update(dt)
 
     def draw(self, screen):
-        for entity in self.entities:
-            entity.draw(screen)
+        for group in self.sprite_groups.values():
+            group.draw(screen)
