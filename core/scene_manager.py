@@ -1,7 +1,7 @@
 class SceneManager:
-    def __init__(self):
+    def __init__(self, input_handler):
         from scenes.menu import MenuScene
-        self.current_scene = MenuScene(self)
+        self.current_scene = MenuScene(self, input_handler)
     
     def handle_events(self):
         self.current_scene.handle_events()

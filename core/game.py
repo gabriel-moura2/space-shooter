@@ -2,6 +2,7 @@ import pygame
 from config import SCREEN_WIDTH, SCREEN_HEIGHT, FPS
 from utils.helpers import load_image
 from core.scene_manager import SceneManager
+from core.inputhandler import InputHandler
 
 class Game:
     def __init__(self):
@@ -10,12 +11,14 @@ class Game:
         pygame.display.set_icon(load_image("player"))
         self.clock = pygame.time.Clock()
         self.running = True
-        self.scene_manager = SceneManager()
+        self.input_handler = InputHandler()
+        self.scene_manager = SceneManager(self.input_handler)
         
     def run(self):
         while self.running:
             dt = self.clock.tick(FPS) / 1000
-            self.scene_manager.handle_events()
+            self.input_handler.handle_events()
+            self.input_handler.handle_keys()
             self.scene_manager.update(dt)
             self.scene_manager.draw(self.screen)
             pygame.display.flip()

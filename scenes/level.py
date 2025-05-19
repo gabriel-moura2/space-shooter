@@ -1,6 +1,7 @@
 from typing import List, Dict
 import pygame
 from core.scene_manager import SceneManager
+from core.inputhandler import InputHandler
 from scenes.scene import Scene
 from entities.background import SpaceBackground
 from entities.enemy_ship import EnemyShip
@@ -12,8 +13,8 @@ from utils.helpers import generate_partitions
 from config import SCREEN_HEIGHT, SHIP_SPEED, H_POSITION_PLAYER, H_POSITION_ENEMY, SCREEN_WIDTH, LEVEL_DISPLAY_CONFIG
 
 class LevelScene(Scene):
-    def __init__(self, manager: SceneManager, level: int) -> None:
-        super().__init__(manager)
+    def __init__(self, manager: SceneManager, input_handler: InputHandler, level: int) -> None:
+        super().__init__(manager, input_handler)
         self.level: int = level
         self._init_level_structure()
         self._init_game_objects()
@@ -26,28 +27,20 @@ class LevelScene(Scene):
         self.sprite_groups: Dict[str, pygame.sprite.Group] = {
             "enemies": pygame.sprite.Group(),
             "projectiles": pygame.sprite.Group(),
-            "player": pygame.sprite.GroupSingle(PlayerShip()),
+            "player": pygame.sprite.GroupSingle(),
             "life_displays": pygame.sprite.Group(),
             "explosions": pygame.sprite.Group(),
             "ui": pygame.sprite.Group(Text(**LEVEL_DISPLAY_CONFIG, text=f"Level {self.level}"))
         }
+        self.sprite_groups["player"].add(PlayerShip(self.sprite_groups["projectiles"]))
+        self.input_handler.attach(self.sprite_groups["player"].sprite)
         self.sprite_groups["life_displays"].add(Life(self.sprite_groups["player"].sprite))
         self.background: SpaceBackground = SpaceBackground()
 
-    def handle_events(self) -> None:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-                pygame.quit()
-                exit()
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                self.sprite_groups["player"].sprite.shoot(self.sprite_groups["projectiles"])
-        pressed_keys = pygame.key.get_pressed()
-        if (pressed_keys[pygame.K_w] or pressed_keys[pygame.K_UP]):
-            self.sprite_groups["player"].sprite.speed = -SHIP_SPEED * 2
-        elif (pressed_keys[pygame.K_s] or pressed_keys[pygame.K_DOWN]):
-            self.sprite_groups["player"].sprite.speed = SHIP_SPEED * 2
-        else:
-            self.sprite_groups["player"].sprite.speed = 0
+    def handle_event(self, event) -> None:
+        if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+            pygame.quit()
+            exit()
     
     def update(self, dt: float) -> None:
         super().update(dt)
@@ -73,7 +66,7 @@ class LevelScene(Scene):
     def _handle_enemy_attacks(self) -> None:
         for enemy in self.sprite_groups["enemies"]:
             if self.sprite_groups["player"].sprite.rect.clipline(self._calculate_attack_line(enemy.rect)):
-                enemy.shoot(self.sprite_groups["projectiles"])
+                enemy.shoot()
 
     def _calculate_attack_line(self, rect) -> tuple:
         return (rect.centerx - (H_POSITION_ENEMY - H_POSITION_PLAYER), rect.centery, rect.centerx, rect.centery)
@@ -117,12 +110,12 @@ class LevelScene(Scene):
             for i, enemy_type in enumerate(enemy_types):
                 enemy_class = DoubleShotEnemyShip if (enemy_type-1) >> 4 & 1 == 1 else EnemyShip
                 position = self._calculate_enemy_spawn_position(i, len(enemy_types))
-                enemy = enemy_class(position, (enemy_type-1))
+                enemy = enemy_class(position, (enemy_type-1), self.sprite_groups["projectiles"])
                 self.sprite_groups["enemies"].add(enemy)
                 self.sprite_groups["life_displays"].add(Life(enemy))
 
     def _advance_to_next_level(self) -> None:
-        self.manager.change_scene(LevelScene(self.manager, self.level + 1))
+        self.manager.change_scene(LevelScene(self.manager, self.input_handler, self.level + 1))
 
     def _calculate_enemy_spawn_position(self, index: int, total_enemies: int) -> tuple:
         return (SCREEN_WIDTH + H_POSITION_PLAYER, SCREEN_HEIGHT * (index + 1) / (total_enemies + 1))
@@ -130,4 +123,5 @@ class LevelScene(Scene):
     def _check_gameover_conditions(self) -> None:
         if len(self.sprite_groups["player"]) == 0:
             from scenes.game_over import GameOverScene
-            self.manager.change_scene(GameOverScene(self.manager, f"#{self.level}.{self.current_wave_index}"))
+            self.input_handler.detach(self)
+            self.manager.change_scene(GameOverScene(self.manager, self.input_handler, f"#{self.level}.{self.current_wave_index}"))

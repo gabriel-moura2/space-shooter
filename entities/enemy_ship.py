@@ -6,8 +6,8 @@ from utils.helpers import load_image
 from config import H_POSITION_ENEMY, SHIP_SPEED, SCREEN_HEIGHT, PROJECTILE_DELAY, PROJECTILE_SPEED, PROJECTILE_DAMAGE, HEALTH
 
 class EnemyShip(SpaceShip):
-    def __init__(self, position, type):
-        super().__init__(load_image("enemy"), position)
+    def __init__(self, position, type, projectile_manager):
+        super().__init__(load_image("enemy"), position, projectile_manager)
         self.cooldown = 0
         self.projectile_config = {
             'damage': PROJECTILE_DAMAGE * ((type >> 2 & 1) + 1),
@@ -24,9 +24,9 @@ class EnemyShip(SpaceShip):
         pxarray.replace((51, 153, 0), color1)
         pxarray.close()
 
-    def shoot(self, projectiles):
+    def shoot(self):
          if self.cooldown <= 0:
-            projectiles.add(Projectile((self.rect.left, self.rect.centery), -1, self.projectile_config['damage'], self.projectile_config['speed']))
+            self.projectile_manager.add(Projectile((self.rect.left, self.rect.centery), -1, self.projectile_config['damage'], self.projectile_config['speed']))
             self.cooldown = PROJECTILE_DELAY
 
     def update(self, dt):

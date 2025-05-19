@@ -3,9 +3,10 @@ from entities.explosion import ExplosionEffect
 from config import HEALTH
 
 class SpaceShip(Entity):
-    def __init__(self, surface, position):
+    def __init__(self, surface, position, projectile_manager):
         super().__init__(surface)
         self.rect.move_ip(position)
+        self.projectile_manager = projectile_manager
 
     def hit(self, damage):
         self.health -= damage
