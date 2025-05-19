@@ -17,8 +17,8 @@ class LevelScene(Scene):
         self._init_game_objects()
 
     def _init_level_structure(self):
-        self.enemy_wave_config = generate_partitions(self.level, 7)
-        self.stage = 0
+        self.wave_spawn_config = generate_partitions(self.level, 7)
+        self.current_wave_index = 0
 
     def _init_game_objects(self):
         self.sprite_groups = {
@@ -54,18 +54,7 @@ class LevelScene(Scene):
             if projectile.rect.left < 0 or projectile.rect.right > SCREEN_WIDTH:
                 projectile.kill()
 
-        for enemy in self.sprite_groups["enemies"]:
-            if type(enemy) == DoubleShotEnemyShip:
-                view = (enemy.rect.centerx - (H_POSITION_ENEMY - H_POSITION_PLAYER), enemy.rect.top, enemy.rect.centerx, enemy.rect.top)
-                if self.sprite_groups["player"].sprite.rect.clipline(view):
-                    enemy.shoot(self.sprite_groups["projectiles"])
-                view2 = (enemy.rect.centerx - (H_POSITION_ENEMY - H_POSITION_PLAYER), enemy.rect.bottom, enemy.rect.centerx, enemy.rect.bottom)
-                if self.sprite_groups["player"].sprite.rect.clipline(view2):
-                    enemy.shoot2(self.sprite_groups["projectiles"])
-            else:
-                view = (enemy.rect.centerx - (H_POSITION_ENEMY - H_POSITION_PLAYER), enemy.rect.centery, enemy.rect.centerx, enemy.rect.centery)
-                if self.sprite_groups["player"].sprite.rect.clipline(view):
-                    enemy.shoot(self.sprite_groups["projectiles"])
+        self._handle_enemy_attacks()
         
         # Melhorar renderização depois
         sprite_dict = pygame.sprite.groupcollide(self.sprite_groups["projectiles"], self.sprite_groups["enemies"], True, False)
@@ -88,9 +77,9 @@ class LevelScene(Scene):
             break
 
         if len(self.sprite_groups["enemies"]) == 0:
-            if self.stage < len(self.enemy_wave_config):
-                enemy_types = self.enemy_wave_config[self.stage]
-                self.stage += 1
+            if self.current_wave_index < len(self.wave_spawn_config):
+                enemy_types = self.wave_spawn_config[self.current_wave_index]
+                self.current_wave_index += 1
                 for i in range(len(enemy_types)):
                     enemy_type = enemy_types[i]-1
                     if enemy_type >> 4 & 1 == 0:
@@ -104,8 +93,16 @@ class LevelScene(Scene):
 
         if len(self.sprite_groups["player"]) == 0:
             from scenes.game_over import GameOverScene
-            self.manager.change_scene(GameOverScene(self.manager, f"#{self.level}.{self.stage}"))
+            self.manager.change_scene(GameOverScene(self.manager, f"#{self.level}.{self.current_wave_index}"))
     
     def draw(self, screen):
         self.background.draw(screen)
         super().draw(screen)
+
+    def _handle_enemy_attacks(self):
+        for enemy in self.sprite_groups["enemies"]:
+            if self.sprite_groups["player"].sprite.rect.clipline(self._calculate_attack_line(enemy.rect)):
+                enemy.shoot(self.sprite_groups["projectiles"])
+
+    def _calculate_attack_line(self, rect):
+        return (rect.centerx - (H_POSITION_ENEMY - H_POSITION_PLAYER), rect.centery, rect.centerx, rect.centery)
