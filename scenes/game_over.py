@@ -7,7 +7,7 @@ class GameOverScene(Scene):
     def __init__(self, manager, score):
         super().__init__(manager)
         self.sprite_groups = {
-            "texts": pygame.sprite.Group(
+            "ui": pygame.sprite.Group(
                 Text(**GAME_OVER_DISPLAY_CONFIG),
                 Text(**SCORE_DISPLAY_CONFIG, text=f"Score {score}"),
                 Text(**TO_MENU_DISPLAY_CONFIG)

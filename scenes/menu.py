@@ -9,7 +9,7 @@ class MenuScene(Scene):
     def __init__(self, manager):
         super().__init__(manager)
         self.sprite_groups = {
-            "texts": pygame.sprite.Group(Text(**TITLE_DISPLAY_CONFIG), Text(**START_DISPLAY_CONFIG))
+            "ui": pygame.sprite.Group(Text(**TITLE_DISPLAY_CONFIG), Text(**START_DISPLAY_CONFIG))
         }
 
     def handle_events(self):
