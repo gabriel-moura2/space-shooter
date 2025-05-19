@@ -10,7 +10,7 @@ from entities.player_ship import PlayerShip
 from entities.text import Text
 from entities.life import Life
 from utils.helpers import generate_partitions
-from config import SCREEN_HEIGHT, SHIP_SPEED, H_POSITION_PLAYER, H_POSITION_ENEMY, SCREEN_WIDTH, LEVEL_DISPLAY_CONFIG
+from config import SCREEN_HEIGHT, H_POSITION_PLAYER, H_POSITION_ENEMY, SCREEN_WIDTH, LEVEL_DISPLAY_CONFIG
 
 class LevelScene(Scene):
     def __init__(self, manager: SceneManager, input_handler: InputHandler, level: int) -> None:
@@ -37,7 +37,7 @@ class LevelScene(Scene):
         self.sprite_groups["life_displays"].add(Life(self.sprite_groups["player"].sprite))
         self.background: SpaceBackground = SpaceBackground()
 
-    def handle_event(self, event) -> None:
+    def handle_event(self, event: pygame.event.Event) -> None:
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
             pygame.quit()
             exit()
