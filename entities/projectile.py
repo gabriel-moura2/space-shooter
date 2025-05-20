@@ -1,7 +1,7 @@
 from base.entity import Entity
-from entities.explosion import ExplosionEffect
 from utils.helpers import load_image
 from utils.helpers import load_sound
+from config import SCREEN_WIDTH
 
 class Projectile(Entity):
     def __init__(self, position, direction, damage, speed):
@@ -18,6 +18,5 @@ class Projectile(Entity):
     
     def update(self, dt):
         self.rect = self.rect.move(self.direction * self.speed * dt, 0)
-    
-    def explode(self, explosions):
-        explosions.add(ExplosionEffect(self.rect.center, 36))
+        if self.rect.left < 0 or self.rect.right > SCREEN_WIDTH:
+            self.kill()

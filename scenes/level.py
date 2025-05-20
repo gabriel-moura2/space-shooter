@@ -48,7 +48,6 @@ class LevelScene(Scene):
         super().update(dt)
         self._update_background(dt)
         self._handle_enemy_attacks()
-        self.collision_system.handle_projectile_bounds(self.sprite_groups["projectiles"])
         self._handle_collisions()
         self._spawn_enemies_if_needed()
         self._check_gameover_conditions()
@@ -71,6 +70,7 @@ class LevelScene(Scene):
     def _handle_collisions(self) -> None:
         self.collision_system.handle_projectile_player_collision(self.sprite_groups["projectiles"], self.sprite_groups["player"].sprite)
         self.collision_system.handle_projectile_enemy_collision(self.sprite_groups["projectiles"], self.sprite_groups["enemies"])
+        self.collision_system.handle_projectile_projectile_collision(self.sprite_groups["projectiles"])
 
     def _spawn_enemies_if_needed(self) -> None:
         if len(self.sprite_groups["enemies"]) == 0:
