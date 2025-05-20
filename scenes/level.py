@@ -10,7 +10,7 @@ from entities.player_ship import PlayerShip
 from ui.text import Text
 from ui.health import HealthDisplay
 from utils.helpers import generate_partitions
-from config import SCREEN_HEIGHT, H_POSITION_PLAYER, H_POSITION_ENEMY, SCREEN_WIDTH, LEVEL_DISPLAY_CONFIG
+from config import H_POSITION_PLAYER, H_POSITION_ENEMY, LEVEL_DISPLAY_CONFIG
 
 class LevelScene(Scene):
     def __init__(self, manager: SceneManager, input_handler: InputHandler, level: int) -> None:
@@ -40,6 +40,14 @@ class LevelScene(Scene):
             exit()
     
     def update(self, dt: float) -> None:
+        """
+        Updates the scene by calling update on all groups, updating the background,
+        making enemies attack, checking collisions, spawning enemies if needed, and
+        checking if the game is over.
+
+        Args:
+            dt (float): The time elapsed since last update.
+        """
         super().update(dt)
         self._update_background(dt)
         self._handle_enemy_attacks()
@@ -63,28 +71,58 @@ class LevelScene(Scene):
         return (rect.centerx - (H_POSITION_ENEMY - H_POSITION_PLAYER), rect.centery, rect.centerx, rect.centery)
     
     def _handle_collisions(self) -> None:
+        """ Handle all the collisions in the level scene.
+
+        This method is called in the update method of the LevelScene class. It
+        handles the collisions between the player and the projectiles, the
+        enemies and the projectiles, and the projectiles among themselves.
+
+        """
         self.collision_system.handle_projectile_player_collision(self.sprite_groups["projectiles"], self.sprite_groups["player"].sprite)
         self.collision_system.handle_projectile_enemy_collision(self.sprite_groups["projectiles"], self.sprite_groups["enemies"])
         self.collision_system.handle_projectile_projectile_collision(self.sprite_groups["projectiles"])
 
     def _spawn_enemies_if_needed(self) -> None:
-        if len(self.sprite_groups["enemies"]) == 0:
-            if self.wave_manager.is_complete:
-                self._advance_to_next_level()
-                return
+        """Spawn the next wave of enemies if there are no more enemies in the level.
+
+        This method is called in the update method of the LevelScene class. It
+        first checks if there are any more enemies in the level. If there are, it
+        does nothing. If there are no more enemies, it checks if the WaveManager
+        has completed its waves. If it has, it calls the _advance_to_next_level
+        method to advance to the next level. If it has not, it spawns the next
+        wave of enemies and adds their health displays to the game.
+        """
+        if len(self.sprite_groups["enemies"]) != 0:
+            return
+
+        if self.wave_manager.is_complete:
+            self._advance_to_next_level()
+            return
             
-            self.wave_manager.spawn_next_wave(self.sprite_groups["enemies"], self.sprite_groups["projectiles"])
-            for enemy in self.sprite_groups["enemies"]:
-                self.sprite_groups["health_displays"].add(HealthDisplay(enemy))
+        self.wave_manager.spawn_next_wave(self.sprite_groups["enemies"], self.sprite_groups["projectiles"])
+        for enemy in self.sprite_groups["enemies"]:
+            self.sprite_groups["health_displays"].add(HealthDisplay(enemy))
 
     def _advance_to_next_level(self) -> None:
+        """Advance to the next level.
+
+        This method is called when the player has defeated all enemies in the
+        current level. It detaches the input handler and changes the current
+        scene to the next level, passing the current level plus one as the new
+        level index.
+        """
+        self.input_handler.detach(self.sprite_groups["player"].sprite)
         self.manager.change_scene(LevelScene(self.manager, self.input_handler, self.level + 1))
 
-    def _calculate_enemy_spawn_position(self, index: int, total_enemies: int) -> tuple:
-        return (SCREEN_WIDTH + H_POSITION_PLAYER, SCREEN_HEIGHT * (index + 1) / (total_enemies + 1))
-
     def _check_gameover_conditions(self) -> None:
+        """Check if the game is over and transition to the GameOverScene.
+
+        This method checks if the player's sprite group is empty, indicating
+        that the player has been defeated. If so, it detaches the input
+        handler and changes the current scene to the GameOverScene, passing
+        the current level and wave index as the score.
+        """
         if len(self.sprite_groups["player"]) == 0:
             from scenes.game_over import GameOverScene
-            self.input_handler.detach(self)
+            self.input_handler.detach(self.sprite_groups["player"].sprite)
             self.manager.change_scene(GameOverScene(self.manager, self.input_handler, f"#{self.level}.{self.wave_manager.current_wave_index}"))

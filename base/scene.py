@@ -4,7 +4,6 @@ class Scene:
     def __init__(self, manager, input_handler):
         self.manager = manager
         self.input_handler = input_handler
-        self.input_handler.attach(self)
 
     def handle_events(self):
         for event in pygame.event.get():

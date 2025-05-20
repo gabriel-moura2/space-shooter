@@ -18,7 +18,6 @@ class MenuScene(Scene):
             exit()
         if (event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE):
             from scenes.level import LevelScene
-            self.input_handler.detach(self)
             self.manager.change_scene(LevelScene(self.manager, self.input_handler, 1))
     
     def update(self, dt):

@@ -20,5 +20,4 @@ class GameOverScene(Scene):
             exit()
         if (event.type == pygame.KEYDOWN and event.key == pygame.K_p):
             from scenes.menu import MenuScene
-            self.input_handler.detach(self)
             self.manager.change_scene(MenuScene(self.manager, self.input_handler))
