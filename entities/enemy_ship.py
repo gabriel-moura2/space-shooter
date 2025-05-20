@@ -9,24 +9,14 @@ class EnemyShip(SpaceShip):
     def __init__(self, position, type, projectile_manager):
         super().__init__(load_image("enemy"), position, projectile_manager)
         self.cooldown = 0
-        self.projectile_config = {
-            'damage': PROJECTILE_DAMAGE * ((type >> 2 & 1) + 1),
-            'speed': PROJECTILE_SPEED * ((type >> 1 & 1) + 1)
-        }
-        self.speed = SHIP_SPEED * ((type >> 3 & 1) + 1)
-        self.health = HEALTH * ((type & 1) + 1)
-        pxarray = PixelArray(self.image)
-        color1 = 255 - (type >> 4) * 85, 255 - (type >> 2 & 3) * 85, 255 - (type & 3) * 85
-        hsv = colorsys.rgb_to_hsv(color1[0] / 255, color1[1] / 255, color1[2] / 255)
-        rgb = colorsys.hsv_to_rgb((hsv[0] - (1/9)) % 1, hsv[1], hsv[2] / 3)
-        color2 = int(rgb[0] * 255), int(rgb[1] * 255), int(rgb[2] * 255)
-        pxarray.replace((51, 51, 0), color2)
-        pxarray.replace((51, 153, 0), color1)
-        pxarray.close()
 
     def shoot(self):
          if self.cooldown <= 0:
-            self.projectile_manager.add(Projectile((self.rect.left, self.rect.centery), -1, self.projectile_config['damage'], self.projectile_config['speed']))
+            if self.is_double_shot:
+                self.projectile_manager.add(Projectile((self.rect.left, self.rect.top), -1, self.projectile_config['damage'], self.projectile_config['speed']))
+                self.projectile_manager.add(Projectile((self.rect.left, self.rect.bottom), -1, self.projectile_config['damage'], self.projectile_config['speed']))
+            else:
+                self.projectile_manager.add(Projectile((self.rect.left, self.rect.centery), -1, self.projectile_config['damage'], self.projectile_config['speed']))
             self.cooldown = PROJECTILE_DELAY
 
     def update(self, dt):

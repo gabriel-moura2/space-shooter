@@ -32,8 +32,3 @@ class CollisionSystem:
                     projectile_list[i].kill()
                     projectile_list[j].kill()
                     self.explosion_manager.add(ExplosionEffect(projectile_list[i].rect.center, 36))
-    
-    def handle_projectile_bounds(self, projectiles: pygame.sprite.Group):
-        for projectile in projectiles:
-            if projectile.rect.left < 0 or projectile.rect.right > SCREEN_WIDTH:
-                projectile.kill()

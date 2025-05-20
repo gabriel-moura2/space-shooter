@@ -3,10 +3,9 @@ import pygame
 from core.scene_manager import SceneManager
 from system.input_handler import InputHandler
 from system.collision_system import CollisionSystem
+from system.wave_manager import WaveManager
 from base.scene import Scene
 from entities.background import SpaceBackground
-from entities.enemy_ship import EnemyShip
-from entities.double_shot_enemy_ship import DoubleShotEnemyShip
 from entities.player_ship import PlayerShip
 from ui.text import Text
 from ui.health import HealthDisplay
@@ -17,13 +16,9 @@ class LevelScene(Scene):
     def __init__(self, manager: SceneManager, input_handler: InputHandler, level: int) -> None:
         super().__init__(manager, input_handler)
         self.level: int = level
-        self._init_level_structure()
+        self.wave_manager: WaveManager = WaveManager(generate_partitions(self.level, 7))
         self._init_game_objects()
         self.collision_system: CollisionSystem = CollisionSystem(self.sprite_groups["explosions"])
-
-    def _init_level_structure(self) -> None:
-        self.wave_spawn_config: List[List[int]] = generate_partitions(self.level, 7)
-        self.current_wave_index: int = 0
 
     def _init_game_objects(self) -> None:
         self.sprite_groups: Dict[str, pygame.sprite.Group] = {
@@ -74,17 +69,12 @@ class LevelScene(Scene):
 
     def _spawn_enemies_if_needed(self) -> None:
         if len(self.sprite_groups["enemies"]) == 0:
-            if self.current_wave_index >= len(self.wave_spawn_config):
+            if self.wave_manager.is_complete:
                 self._advance_to_next_level()
                 return
-
-            enemy_types = self.wave_spawn_config[self.current_wave_index]
-            self.current_wave_index += 1
-            for i, enemy_type in enumerate(enemy_types):
-                enemy_class = DoubleShotEnemyShip if (enemy_type-1) >> 4 & 1 == 1 else EnemyShip
-                position = self._calculate_enemy_spawn_position(i, len(enemy_types))
-                enemy = enemy_class(position, (enemy_type-1), self.sprite_groups["projectiles"])
-                self.sprite_groups["enemies"].add(enemy)
+            
+            self.wave_manager.spawn_next_wave(self.sprite_groups["enemies"], self.sprite_groups["projectiles"])
+            for enemy in self.sprite_groups["enemies"]:
                 self.sprite_groups["health_displays"].add(HealthDisplay(enemy))
 
     def _advance_to_next_level(self) -> None:
@@ -97,4 +87,4 @@ class LevelScene(Scene):
         if len(self.sprite_groups["player"]) == 0:
             from scenes.game_over import GameOverScene
             self.input_handler.detach(self)
-            self.manager.change_scene(GameOverScene(self.manager, self.input_handler, f"#{self.level}.{self.current_wave_index}"))
+            self.manager.change_scene(GameOverScene(self.manager, self.input_handler, f"#{self.level}.{self.wave_manager.current_wave_index}"))
