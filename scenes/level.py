@@ -8,7 +8,7 @@ from entities.enemy_ship import EnemyShip
 from entities.double_shot_enemy_ship import DoubleShotEnemyShip
 from entities.player_ship import PlayerShip
 from ui.text import Text
-from entities.life import Life
+from ui.health import HealthDisplay
 from utils.helpers import generate_partitions
 from config import SCREEN_HEIGHT, H_POSITION_PLAYER, H_POSITION_ENEMY, SCREEN_WIDTH, LEVEL_DISPLAY_CONFIG
 
@@ -28,13 +28,13 @@ class LevelScene(Scene):
             "enemies": pygame.sprite.Group(),
             "projectiles": pygame.sprite.Group(),
             "player": pygame.sprite.GroupSingle(),
-            "life_displays": pygame.sprite.Group(),
+            "health_displays": pygame.sprite.Group(),
             "explosions": pygame.sprite.Group(),
             "ui": pygame.sprite.Group(Text(**LEVEL_DISPLAY_CONFIG, text=f"Level {self.level}"))
         }
         self.sprite_groups["player"].add(PlayerShip(self.sprite_groups["projectiles"]))
         self.input_handler.attach(self.sprite_groups["player"].sprite)
-        self.sprite_groups["life_displays"].add(Life(self.sprite_groups["player"].sprite))
+        self.sprite_groups["health_displays"].add(HealthDisplay(self.sprite_groups["player"].sprite))
         self.background: SpaceBackground = SpaceBackground()
 
     def handle_event(self, event: pygame.event.Event) -> None:
@@ -112,7 +112,7 @@ class LevelScene(Scene):
                 position = self._calculate_enemy_spawn_position(i, len(enemy_types))
                 enemy = enemy_class(position, (enemy_type-1), self.sprite_groups["projectiles"])
                 self.sprite_groups["enemies"].add(enemy)
-                self.sprite_groups["life_displays"].add(Life(enemy))
+                self.sprite_groups["health_displays"].add(HealthDisplay(enemy))
 
     def _advance_to_next_level(self) -> None:
         self.manager.change_scene(LevelScene(self.manager, self.input_handler, self.level + 1))

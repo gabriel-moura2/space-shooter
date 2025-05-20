@@ -1,11 +1,13 @@
 from pygame import Surface, SRCALPHA
-from base.entity import Entity
+from pygame.sprite import Sprite
 from utils.helpers import load_image
 from config import HEALTH
 
-class Life(Entity):
+class HealthDisplay(Sprite):
     def __init__(self, space_ship):
-        super().__init__(Surface((21, 7), SRCALPHA))
+        Sprite.__init__(self)
+        self.image = Surface((21, 7), SRCALPHA)
+        self.rect = self.image.get_rect()
         self.sprite = load_image("heart")
         self.rect.move_ip(space_ship.rect.left, space_ship.rect.top - 7)
         self.space_ship = space_ship

@@ -36,6 +36,23 @@ python main.py
 - Python 3.x
 - Pygame
 
+## Estrutura do Projeto
+
+space-shooter/
+├── assets/           # Imagens, sons, fontes
+├── base/             # Classes básicas genéricas
+├── core/             # Lógica principal do loop do jogo
+├── entities/         # Naves, inimigos, projéteis, etc.
+├── scenes/           # Telas e estados do jogo (menu, jogo, game over...)
+├── system/           # Sistemas auxiliares (ex: colisão)
+├── ui/               # Elementos de interface (textos, HUD)
+├── utils/            # Funções utilitárias
+├── config.py         # Configurações globais (tamanho da tela, cores, etc)
+├── LICENSE
+├── main.py           # Arquivo principal do jogo
+├── README.md
+└── requirements.txt  # Lista de dependências
+
 ***
 
 > Este jogo é uma prática de projeto individual e serve como laboratório para aplicar conceitos de design, programação e organização em desenvolvimento de jogos.
