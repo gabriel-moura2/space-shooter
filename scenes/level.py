@@ -1,13 +1,13 @@
 from typing import List, Dict
 import pygame
 from core.scene_manager import SceneManager
-from core.inputhandler import InputHandler
-from scenes.scene import Scene
+from system.inputhandler import InputHandler
+from base.scene import Scene
 from entities.background import SpaceBackground
 from entities.enemy_ship import EnemyShip
 from entities.double_shot_enemy_ship import DoubleShotEnemyShip
 from entities.player_ship import PlayerShip
-from entities.text import Text
+from ui.text import Text
 from entities.life import Life
 from utils.helpers import generate_partitions
 from config import SCREEN_HEIGHT, H_POSITION_PLAYER, H_POSITION_ENEMY, SCREEN_WIDTH, LEVEL_DISPLAY_CONFIG

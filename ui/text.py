@@ -1,11 +1,13 @@
 from pygame.font import Font
-from entities.entity import Entity
+from pygame.sprite import Sprite
 
-class Text(Entity):
+class Text(Sprite):
 	def __init__(self, position, text, size, color):
 		self.font = Font('assets/fonts/ElecstromRegular.ttf', size)
 		self.color = color
-		super().__init__(self.font.render(text, True, color))
+		Sprite.__init__(self)
+		self.image = self.font.render(text, True, color)
+		self.rect = self.image.get_rect()
 		self.rect.center = position
 
 	def text(self, text):

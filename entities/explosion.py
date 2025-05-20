@@ -1,5 +1,5 @@
 from pygame import Surface, SRCALPHA
-from entities.entity import Entity
+from base.entity import Entity
 from utils.helpers import load_image, load_sound
 
 class ExplosionEffect(Entity):

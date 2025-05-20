@@ -1,4 +1,4 @@
-from entities.entity import Entity
+from base.entity import Entity
 from entities.explosion import ExplosionEffect
 from utils.helpers import load_image
 from utils.helpers import load_sound

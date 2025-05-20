@@ -1,4 +1,4 @@
-from entities.entity import Entity
+from base.entity import Entity
 from entities.explosion import ExplosionEffect
 from config import HEALTH
 

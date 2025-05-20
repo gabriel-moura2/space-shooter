@@ -1,6 +1,6 @@
 import pygame
-from scenes.scene import Scene
-from entities.text import Text
+from base.scene import Scene
+from ui.text import Text
 from config import MENU_BACKGROUND_COLOR
 from config import TITLE_DISPLAY_CONFIG, START_DISPLAY_CONFIG
 

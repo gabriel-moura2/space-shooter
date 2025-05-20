@@ -2,7 +2,7 @@ import pygame
 from config import SCREEN_WIDTH, SCREEN_HEIGHT, FPS
 from utils.helpers import load_image
 from core.scene_manager import SceneManager
-from core.inputhandler import InputHandler
+from system.inputhandler import InputHandler
 
 class Game:
     def __init__(self):

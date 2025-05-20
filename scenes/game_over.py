@@ -1,6 +1,6 @@
 import pygame
-from scenes.scene import Scene
-from entities.text import Text
+from base.scene import Scene
+from ui.text import Text
 from config import GAME_OVER_DISPLAY_CONFIG, SCORE_DISPLAY_CONFIG, TO_MENU_DISPLAY_CONFIG
 
 class GameOverScene(Scene):
