@@ -17,5 +17,4 @@ class SceneManager:
     def change_scene(self, new_scene):
         self.input_handler.detach(self.current_scene)
         self.input_handler.attach(new_scene)
-        print(self.input_handler.observers)
         self.current_scene = new_scene
