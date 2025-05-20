@@ -9,7 +9,10 @@ class ExplosionEffect(Entity):
         self.rect.center = position
         self.frame = 0
         self.frame_speed = frame_speed
-        load_sound("hit").play()
+        if self.frame_speed < 20:
+            load_sound("hit").play()
+        else:
+            load_sound("explosion").play()
 
     def update(self, dt):
         self.frame += self.frame_speed * dt

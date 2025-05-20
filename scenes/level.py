@@ -1,7 +1,8 @@
 from typing import List, Dict
 import pygame
 from core.scene_manager import SceneManager
-from system.inputhandler import InputHandler
+from system.input_handler import InputHandler
+from system.collision_system import CollisionSystem
 from base.scene import Scene
 from entities.background import SpaceBackground
 from entities.enemy_ship import EnemyShip
@@ -18,6 +19,7 @@ class LevelScene(Scene):
         self.level: int = level
         self._init_level_structure()
         self._init_game_objects()
+        self.collision_system: CollisionSystem = CollisionSystem(self.sprite_groups["explosions"])
 
     def _init_level_structure(self) -> None:
         self.wave_spawn_config: List[List[int]] = generate_partitions(self.level, 7)
@@ -45,8 +47,8 @@ class LevelScene(Scene):
     def update(self, dt: float) -> None:
         super().update(dt)
         self._update_background(dt)
-        self._handle_projectile_bounds()
         self._handle_enemy_attacks()
+        self.collision_system.handle_projectile_bounds(self.sprite_groups["projectiles"])
         self._handle_collisions()
         self._spawn_enemies_if_needed()
         self._check_gameover_conditions()
@@ -58,11 +60,6 @@ class LevelScene(Scene):
     def _update_background(self, dt: float) -> None:
         self.background.update(dt)
 
-    def _handle_projectile_bounds(self) -> None:
-        for projectile in self.sprite_groups["projectiles"]:
-            if projectile.rect.left < 0 or projectile.rect.right > SCREEN_WIDTH:
-                projectile.kill()
-
     def _handle_enemy_attacks(self) -> None:
         for enemy in self.sprite_groups["enemies"]:
             if self.sprite_groups["player"].sprite.rect.clipline(self._calculate_attack_line(enemy.rect)):
@@ -72,32 +69,8 @@ class LevelScene(Scene):
         return (rect.centerx - (H_POSITION_ENEMY - H_POSITION_PLAYER), rect.centery, rect.centerx, rect.centery)
     
     def _handle_collisions(self) -> None:
-        self._handle_projectile_enemy_collisions()
-        self._handle_projectile_player_collisions()
-
-    def _handle_projectile_enemy_collisions(self) -> None:
-        collisions = pygame.sprite.groupcollide(
-            self.sprite_groups["projectiles"],
-            self.sprite_groups["enemies"], 
-            True, False
-        )
-        for projectile, enemies in collisions.items():
-            for enemy in enemies:
-                self._resolve_ship_hit(projectile, enemy)
-                break
-
-    def _resolve_ship_hit(self, projectile, enemy):
-        projectile.explode(self.sprite_groups["explosions"])
-        enemy.hit(projectile.damage)
-        if enemy.health <= 0:
-            enemy.explode(self.sprite_groups["explosions"])
-            enemy.kill()
-
-    def _handle_projectile_player_collisions(self) -> None:
-        collisions = pygame.sprite.groupcollide(self.sprite_groups["projectiles"], self.sprite_groups["player"], True, False)
-        for projectile, player in collisions.items():
-            self._resolve_ship_hit(projectile, player[0])
-            break
+        self.collision_system.handle_projectile_player_collision(self.sprite_groups["projectiles"], self.sprite_groups["player"].sprite)
+        self.collision_system.handle_projectile_enemy_collision(self.sprite_groups["projectiles"], self.sprite_groups["enemies"])
 
     def _spawn_enemies_if_needed(self) -> None:
         if len(self.sprite_groups["enemies"]) == 0:

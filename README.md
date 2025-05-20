@@ -38,6 +38,7 @@ python main.py
 
 ## Estrutura do Projeto
 
+```bash
 space-shooter/
 ├── assets/           # Imagens, sons, fontes
 ├── base/             # Classes básicas genéricas
@@ -52,6 +53,7 @@ space-shooter/
 ├── main.py           # Arquivo principal do jogo
 ├── README.md
 └── requirements.txt  # Lista de dependências
+```
 
 ***
 
