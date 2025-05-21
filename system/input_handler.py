@@ -13,9 +13,9 @@ class InputHandler:
     def handle_events(self):
         for event in pygame.event.get():
             for observer in self.observers:
-                observer.handle_event(event)
+                observer.handle_input_event(event)
     
-    def handle_keys(self):
+    def handle_pressed_keys(self):
         pressed_keys = pygame.key.get_pressed()
         for observer in self.observers:
-            observer.handle_keys(pressed_keys)
+            observer.handle_pressed_keys(pressed_keys)

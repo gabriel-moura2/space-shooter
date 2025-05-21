@@ -18,7 +18,7 @@ class Game:
         while self.running:
             dt = self.clock.tick(FPS) / 1000
             self.input_handler.handle_events()
-            self.input_handler.handle_keys()
+            self.input_handler.handle_pressed_keys()
             self.scene_manager.update(dt)
             self.scene_manager.draw(self.screen)
             pygame.display.flip()

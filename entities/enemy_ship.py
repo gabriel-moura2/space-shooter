@@ -1,5 +1,3 @@
-from pygame import PixelArray
-import colorsys
 from entities.space_ship import SpaceShip
 from entities.projectile import Projectile
 from utils.helpers import load_image

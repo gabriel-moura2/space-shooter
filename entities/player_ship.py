@@ -18,11 +18,11 @@ class PlayerShip(SpaceShip):
     def shoot(self):
         self.projectile_manager.add(Projectile((self.rect.right, self.rect.centery), 1, PROJECTILE_DAMAGE, PROJECTILE_SPEED))
 
-    def handle_event(self, event):
+    def handle_input_event(self, event):
         if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
             self.shoot()
 
-    def handle_keys(self, pressed_keys):
+    def handle_pressed_keys(self, pressed_keys):
         if pressed_keys[pygame.K_UP] or pressed_keys[pygame.K_w]:
             self.speed = -SHIP_SPEED * 2
         elif pressed_keys[pygame.K_DOWN] or pressed_keys[pygame.K_s]:

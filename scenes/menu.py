@@ -12,7 +12,7 @@ class MenuScene(Scene):
             "ui": pygame.sprite.Group(Text(**TITLE_DISPLAY_CONFIG), Text(**START_DISPLAY_CONFIG))
         }
 
-    def handle_event(self, event):
+    def handle_input_event(self, event):
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
             pygame.quit()
             exit()
