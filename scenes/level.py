@@ -8,6 +8,7 @@ from system.level_event_manager import LevelEventManager
 from base.scene import Scene
 from entities.background import SpaceBackground
 from entities.player_ship import PlayerShip
+from entities.explosion import ExplosionEffect
 from ui.text import Text
 from ui.health import HealthDisplay
 from utils.helpers import generate_partitions
@@ -17,10 +18,10 @@ class LevelScene(Scene):
     def __init__(self, manager: SceneManager, input_handler: InputHandler, level: int) -> None:
         super().__init__(manager, input_handler)
         self.level: int = level
-        self.level_event_manager: LevelEventManager = LevelEventManager()
         self.wave_manager: WaveManager = WaveManager(generate_partitions(self.level, 7))
         self._init_game_objects()
-        self.collision_system: CollisionSystem = CollisionSystem(self.sprite_groups["explosions"])
+        self.level_event_manager: LevelEventManager = LevelEventManager(self)
+        self.collision_system: CollisionSystem = CollisionSystem(self.level_event_manager)
 
     def _init_game_objects(self) -> None:
         self.sprite_groups: Dict[str, pygame.sprite.Group] = {
@@ -31,10 +32,10 @@ class LevelScene(Scene):
             "explosions": pygame.sprite.Group(),
             "ui": pygame.sprite.Group(Text(**LEVEL_DISPLAY_CONFIG, text=f"Level {self.level}"))
         }
+        self.background: SpaceBackground = SpaceBackground()
         self.sprite_groups["player"].add(PlayerShip(self.sprite_groups["projectiles"]))
         self.input_handler.attach(self.sprite_groups["player"].sprite)
         self.sprite_groups["health_displays"].add(HealthDisplay(self.sprite_groups["player"].sprite))
-        self.background: SpaceBackground = SpaceBackground()
     
     def update(self, dt: float) -> None:
         super().update(dt)
@@ -42,7 +43,7 @@ class LevelScene(Scene):
         self._handle_enemy_attacks()
         self._handle_collisions()
         self._spawn_enemies_if_needed()
-        self._check_gameover_conditions()
+        # self._check_gameover_conditions()
     
     def draw(self, screen) -> None:
         self.background.draw(screen)
@@ -83,5 +84,24 @@ class LevelScene(Scene):
     def _check_gameover_conditions(self) -> None:
         if len(self.sprite_groups["player"]) == 0:
             from scenes.game_over import GameOverScene
-            self.input_handler.detach(self.sprite_groups["player"].sprite)
             self.manager.change_scene(GameOverScene(self.manager, self.input_handler, f"#{self.level}.{self.wave_manager.current_wave_index}"))
+
+    def _resolve_ship_hit(self, projectiles: pygame.sprite.Sprite, ship: pygame.sprite.Sprite):
+        self.sprite_groups["explosions"].add(ExplosionEffect(projectiles.rect.center, 36))
+        ship.hit(projectiles.damage)
+        if ship.health <= 0:
+            self.sprite_groups["explosions"].add(ExplosionEffect(ship.rect.center, 8))
+            ship.kill()
+
+    def on_enemy_hit(self, event) -> None:
+        self._resolve_ship_hit(event["projectile"], event["enemy"])
+
+    def on_player_hit(self, event) -> None:
+        self._resolve_ship_hit(event["projectile"], event["player"])
+        if event["player"].health <= 0:
+            from scenes.game_over import GameOverScene
+            self.input_handler.detach(event["player"])
+            self.manager.change_scene(GameOverScene(self.manager, self.input_handler, f"#{self.level}.{self.wave_manager.current_wave_index}"))
+
+    def on_projectile_hit(self, event) -> None:
+        self.sprite_groups["explosions"].add(ExplosionEffect(event["projectile1"].rect.center, 36))
