@@ -11,7 +11,7 @@ class WaveManager:
 
     def _enemy_create(self, enemy_type: int, index: int, total_enemies: int, projectile_manager: pygame.sprite.Group) -> EnemyShip:
         position = self._calculate_enemy_spawn_position(index, total_enemies)
-        enemy = EnemyShip(position, enemy_type, projectile_manager)
+        enemy = EnemyShip(position, projectile_manager)
         enemy.projectile_config = {
             'damage': PROJECTILE_DAMAGE * ((enemy_type >> 2 & 1) + 1),
             'speed': PROJECTILE_SPEED * ((enemy_type >> 1 & 1) + 1)
