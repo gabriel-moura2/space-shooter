@@ -13,7 +13,7 @@ from entities.explosion import ExplosionEffect
 from ui.text import Text
 from ui.health import HealthDisplay
 from utils.helpers import generate_partitions
-from config import H_POSITION_PLAYER, H_POSITION_ENEMY, LEVEL_DISPLAY_CONFIG
+from config import H_POSITION_PLAYER, H_POSITION_ENEMY, LEVEL_DISPLAY_CONFIG, SCREEN_HEIGHT, SCREEN_WIDTH
 
 class LevelScene(Scene):
     def __init__(self, manager: SceneManager, input_handler: InputHandler, level: int) -> None:
@@ -33,7 +33,7 @@ class LevelScene(Scene):
             "ui": pygame.sprite.Group(Text(**LEVEL_DISPLAY_CONFIG, text=f"Level {self.level}"))
         }
         self.background: SpaceBackground = SpaceBackground()
-        self.sprite_groups["player"].add(PlayerShip(self.sprite_groups["projectiles"]))
+        self.sprite_groups["player"].add(PlayerShip((-H_POSITION_PLAYER, SCREEN_HEIGHT / 2), self.sprite_groups["projectiles"]))
         self.input_handler.attach(self.sprite_groups["player"].sprite)
         self.sprite_groups["health_displays"].add(HealthDisplay(self.sprite_groups["player"].sprite))
     
@@ -43,6 +43,7 @@ class LevelScene(Scene):
         self._handle_enemy_attacks()
         self._handle_collisions()
         self._spawn_enemies_if_needed()
+        self._check_win_conditions()
         # self._check_gameover_conditions()
     
     def draw(self, screen) -> None:
@@ -70,7 +71,7 @@ class LevelScene(Scene):
             return
 
         if self.wave_manager.is_complete:
-            self._advance_to_next_level()
+            self.sprite_groups["player"].sprite.win = True
             return
             
         self.wave_manager.spawn_next_wave(self.sprite_groups["enemies"], self.sprite_groups["projectiles"])
@@ -80,6 +81,10 @@ class LevelScene(Scene):
     def _advance_to_next_level(self) -> None:
         self.input_handler.detach(self.sprite_groups["player"].sprite)
         self.manager.change_scene(LevelScene(self.manager, self.input_handler, self.level + 1))
+
+    def _check_win_conditions(self) -> None:
+        if self.sprite_groups["player"].sprite.rect.x >= SCREEN_WIDTH + H_POSITION_PLAYER:
+            self._advance_to_next_level()
 
     def _check_gameover_conditions(self) -> None:
         if len(self.sprite_groups["player"]) == 0:
