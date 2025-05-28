@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import Dict
 import pygame
 from core.scene_manager import SceneManager
 from system.input_handler import InputHandler
@@ -9,7 +9,6 @@ from system.projectile_manager import ProjectileManager
 from base.scene import Scene
 from entities.background import SpaceBackground
 from entities.player_ship import PlayerShip
-from entities.explosion import ExplosionEffect
 from ui.text import Text
 from ui.health import HealthDisplay
 from utils.helpers import generate_partitions
@@ -40,11 +39,12 @@ class LevelScene(Scene):
     def update(self, dt: float) -> None:
         super().update(dt)
         self._update_background(dt)
-        self._handle_enemy_attacks()
-        self._handle_collisions()
-        self._spawn_enemies_if_needed()
-        self._check_win_conditions()
-        # self._check_gameover_conditions()
+        self._check_gameover_conditions()
+        if self.sprite_groups["player"].sprite:
+            self._check_win_conditions()
+            self._spawn_enemies_if_needed()
+            self._handle_enemy_attacks()
+            self._handle_collisions()
     
     def draw(self, screen) -> None:
         self.background.draw(screen)
@@ -87,7 +87,7 @@ class LevelScene(Scene):
             self._advance_to_next_level()
 
     def _check_gameover_conditions(self) -> None:
-        if len(self.sprite_groups["player"]) == 0:
+        if len(self.sprite_groups["player"]) == 0 and len(self.sprite_groups["explosions"]) == 0:
             from scenes.game_over import GameOverScene
             self.manager.change_scene(GameOverScene(self.manager, self.input_handler, f"#{self.level}.{self.wave_manager.current_wave_index}"))
 
@@ -104,9 +104,7 @@ class LevelScene(Scene):
     def on_player_hit(self, event) -> None:
         self._resolve_ship_hit(event["projectile"], event["player"])
         if event["player"].health <= 0:
-            from scenes.game_over import GameOverScene
             self.input_handler.detach(event["player"])
-            self.manager.change_scene(GameOverScene(self.manager, self.input_handler, f"#{self.level}.{self.wave_manager.current_wave_index}"))
 
     def on_projectile_hit(self, event) -> None:
         self.sprite_groups["explosions"].create_explosion(event["projectile1"].rect.center, 36)
