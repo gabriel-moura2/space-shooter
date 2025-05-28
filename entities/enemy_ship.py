@@ -1,5 +1,4 @@
 from entities.space_ship import SpaceShip
-from entities.projectile import Projectile
 from utils.helpers import load_image
 from config import H_POSITION_ENEMY, SHIP_SPEED, SCREEN_HEIGHT, PROJECTILE_DELAY
 
