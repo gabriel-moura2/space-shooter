@@ -21,7 +21,7 @@ class EnemyShip(SpaceShip):
             self.rect = self.rect.move(-SHIP_SPEED * dt, 0)
             return
         super().update(dt)
-        if self.rect.top < 0 or self.rect.bottom > SCREEN_HEIGHT:
+        if self.rect.top <= 0 or self.rect.bottom >= SCREEN_HEIGHT:
             self.speed = -self.speed
         if self.cooldown > 0:
             self.cooldown -= dt
