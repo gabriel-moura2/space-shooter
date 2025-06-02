@@ -1,6 +1,6 @@
 from base.entity import Entity
 from entities.explosion import ExplosionEffect
-from config import HEALTH, SCREEN_HEIGHT
+from config import SCREEN_HEIGHT
 
 class SpaceShip(Entity):
     def __init__(self, surface, position, projectile_manager):

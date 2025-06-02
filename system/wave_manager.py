@@ -19,6 +19,7 @@ class WaveManager:
         enemy.speed = SHIP_SPEED * ((enemy_type >> 3 & 1) + 1)
         enemy.health = HEALTH * ((enemy_type & 1) + 1)
         enemy.is_double_shot = bool((enemy_type >> 4) & 1)
+        enemy.can_rotate = bool((enemy_type >> 5) & 1)
         pxarray = pygame.PixelArray(enemy.image)
         color1 = 255 - (enemy_type >> 4) * 85, 255 - (enemy_type >> 2 & 3) * 85, 255 - (enemy_type & 3) * 85
         hsv = colorsys.rgb_to_hsv(color1[0] / 255, color1[1] / 255, color1[2] / 255)

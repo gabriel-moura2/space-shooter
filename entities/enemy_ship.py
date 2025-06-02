@@ -1,3 +1,5 @@
+import pygame
+import math
 from entities.space_ship import SpaceShip
 from utils.helpers import load_image
 from config import H_POSITION_ENEMY, SHIP_SPEED, SCREEN_HEIGHT, PROJECTILE_DELAY
@@ -15,6 +17,11 @@ class EnemyShip(SpaceShip):
             else:
                 self.projectile_manager.create_projectile((self.rect.left, self.rect.centery), -1, self.projectile_config['damage'], self.projectile_config['speed'])
             self.cooldown = PROJECTILE_DELAY
+
+    def rotate(self, dx, dy):
+        angle = math.degrees(math.atan2(-dy, dx))
+        self.image = pygame.transform.rotate(self.image, angle)
+        self.rect = self.image.get_rect(center=self.rect.center)
 
     def update(self, dt):
         if self.rect.x > H_POSITION_ENEMY:
