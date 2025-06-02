@@ -1,5 +1,6 @@
 from typing import Dict
 import pygame
+import math
 from core.scene_manager import SceneManager
 from system.input_handler import InputHandler
 from system.collision_system import CollisionSystem
@@ -55,12 +56,15 @@ class LevelScene(Scene):
 
     def _handle_enemy_attacks(self) -> None:
         for enemy in self.sprite_groups["enemies"]:
-            if self.sprite_groups["player"].sprite.rect.clipline(self._calculate_attack_line(enemy.rect)):
-                enemy.shoot()
             if enemy.can_rotate:
-                dx = H_POSITION_PLAYER - H_POSITION_ENEMY
-                dy = self.sprite_groups["player"].sprite.rect.centery - enemy.rect.centery
-                enemy.rotate(dx, dy)
+                dx = enemy.rect.centerx - self.sprite_groups["player"].sprite.rect.centerx
+                dy = enemy.rect.centery - self.sprite_groups["player"].sprite.rect.centery
+                angle = math.degrees(math.atan2(-dy, dx))
+                enemy.rotate(angle)
+                enemy.shoot()
+            else:
+                if self.sprite_groups["player"].sprite.rect.clipline(self._calculate_attack_line(enemy.rect)):
+                    enemy.shoot()
 
     def _calculate_attack_line(self, rect) -> tuple:
         return (rect.centerx - (H_POSITION_ENEMY - H_POSITION_PLAYER), rect.centery, rect.centerx, rect.centery)
