@@ -19,7 +19,7 @@ class CollisionSystem:
         projectile_list = projectiles.sprites()
         for i in range(len(projectile_list)):
             for j in range(i + 1, len(projectile_list)):
-                if projectile_list[i].direction != projectile_list[j].direction and projectile_list[i].rect.colliderect(projectile_list[j].rect):
+                if projectile_list[i].speed_x != projectile_list[j].speed_x and projectile_list[i].rect.colliderect(projectile_list[j].rect):
                     projectile_list[i].kill()
                     projectile_list[j].kill()
                     self.level_scene.on_projectile_hit({"projectile1": projectile_list[i], "projectile2": projectile_list[j]})

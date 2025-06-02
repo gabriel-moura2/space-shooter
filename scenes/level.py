@@ -57,10 +57,9 @@ class LevelScene(Scene):
     def _handle_enemy_attacks(self) -> None:
         for enemy in self.sprite_groups["enemies"]:
             if enemy.can_rotate:
-                dx = enemy.rect.centerx - self.sprite_groups["player"].sprite.rect.centerx
+                dx = enemy.rect.left - self.sprite_groups["player"].sprite.rect.right
                 dy = enemy.rect.centery - self.sprite_groups["player"].sprite.rect.centery
-                angle = math.degrees(math.atan2(-dy, dx))
-                enemy.rotate(angle)
+                enemy.rotate(dx, dy)
                 enemy.shoot()
             else:
                 if self.sprite_groups["player"].sprite.rect.clipline(self._calculate_attack_line(enemy.rect)):
