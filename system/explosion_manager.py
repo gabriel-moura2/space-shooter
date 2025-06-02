@@ -13,3 +13,6 @@ class ExplosionManager:
 
     def draw(self, surface):
         self.explosions.draw(surface)
+
+    def __len__(self):
+        return len(self.explosions)
