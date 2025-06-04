@@ -1,4 +1,4 @@
-import pygame
+import pygame, asyncio
 from config import SCREEN_WIDTH, SCREEN_HEIGHT, FPS
 from utils.helpers import load_image
 from core.scene_manager import SceneManager
@@ -14,7 +14,7 @@ class Game:
         self.input_handler = InputHandler()
         self.scene_manager = SceneManager(self.input_handler)
         
-    def run(self):
+    async def run(self):
         while self.running:
             dt = self.clock.tick(FPS) / 1000
             self.input_handler.handle_events()
@@ -22,4 +22,5 @@ class Game:
             self.scene_manager.update(dt)
             self.scene_manager.draw(self.screen)
             pygame.display.flip()
+            await asyncio.sleep(0)
 

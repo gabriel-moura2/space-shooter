@@ -12,14 +12,14 @@ from entities.background import SpaceBackground
 from entities.player_ship import PlayerShip
 from ui.text import Text
 from ui.health import HealthDisplay
-from utils.helpers import generate_partitions
+from utils.helpers import generate_partitions_dp
 from config import H_POSITION_PLAYER, H_POSITION_ENEMY, LEVEL_DISPLAY_CONFIG, SCREEN_HEIGHT, SCREEN_WIDTH
 
 class LevelScene(Scene):
     def __init__(self, manager: SceneManager, input_handler: InputHandler, level: int) -> None:
         super().__init__(manager, input_handler)
         self.level: int = level
-        self.wave_manager: WaveManager = WaveManager(generate_partitions(self.level, 7))
+        self.wave_manager: WaveManager = WaveManager(generate_partitions_dp(self.level, 7, 63))
         self._init_game_objects()
         self.collision_system: CollisionSystem = CollisionSystem(self)
 
@@ -60,7 +60,8 @@ class LevelScene(Scene):
                 dx = enemy.rect.left - self.sprite_groups["player"].sprite.rect.right
                 dy = enemy.rect.centery - self.sprite_groups["player"].sprite.rect.centery
                 enemy.rotate(dx, dy)
-                enemy.shoot()
+                if enemy.rect.right < SCREEN_WIDTH:
+                    enemy.shoot()
             else:
                 if self.sprite_groups["player"].sprite.rect.clipline(self._calculate_attack_line(enemy.rect)):
                     enemy.shoot()
