@@ -12,6 +12,8 @@ class PlayerShip(SpaceShip):
 
     def update(self, dt):
         if self.rect.x < H_POSITION_PLAYER:
+            if SHIP_SPEED * 2 * dt > H_POSITION_PLAYER:
+                return
             self.rect = self.rect.move(SHIP_SPEED * 2 * dt, 0)
             return
         if self.win:

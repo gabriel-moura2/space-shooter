@@ -2,7 +2,7 @@ import pygame
 import math
 from entities.space_ship import SpaceShip
 from utils.helpers import load_image
-from config import H_POSITION_ENEMY, SHIP_SPEED, SCREEN_HEIGHT, PROJECTILE_DELAY
+from config import H_POSITION_ENEMY, SHIP_SPEED, SCREEN_HEIGHT, PROJECTILE_DELAY, H_POSITION_PLAYER
 
 class EnemyShip(SpaceShip):
     def __init__(self, position, projectile_manager):
@@ -27,6 +27,8 @@ class EnemyShip(SpaceShip):
 
     def update(self, dt):
         if self.rect.x > H_POSITION_ENEMY:
+            if SHIP_SPEED * dt > H_POSITION_PLAYER:
+                return
             self.rect = self.rect.move(-SHIP_SPEED * dt, 0)
             return
         super().update(dt)
