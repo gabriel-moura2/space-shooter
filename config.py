@@ -50,3 +50,10 @@ TO_MENU_DISPLAY_CONFIG = {
     "size": int(SCREEN_HEIGHT / 12),
     "color": (153, 153, 0)
 }
+
+CONGRATULATIONS_DISPLAY_CONFIG = {
+    "position": (int(SCREEN_WIDTH / 2), int(SCREEN_HEIGHT / 2)),
+    "text": "CONGRATULATIONS",
+    "size": int(SCREEN_HEIGHT / 6),
+    "color": (0, 255, 0)
+}

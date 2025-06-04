@@ -88,6 +88,10 @@ class LevelScene(Scene):
 
     def _advance_to_next_level(self) -> None:
         self.input_handler.detach(self.sprite_groups["player"].sprite)
+        if self.level >= 441:
+            from scenes.congratulations import CongratulationsScene
+            self.manager.change_scene(CongratulationsScene(self.manager, self.input_handler))
+            return
         self.manager.change_scene(LevelScene(self.manager, self.input_handler, self.level + 1))
 
     def _check_win_conditions(self) -> None:
