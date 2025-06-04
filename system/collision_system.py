@@ -7,13 +7,15 @@ class CollisionSystem:
     def handle_projectile_enemy_collision(self, projectiles: pygame.sprite.Group, enemy: pygame.sprite.Group):
         collisions = pygame.sprite.groupcollide(projectiles, enemy, True, False)
         for projectile, enemies in collisions.items():
-            for enemy in enemies:
-                self.level_scene.on_enemy_hit({"enemy": enemy, "projectile": projectile})
+            if projectile.speed_x > 0:
+                for enemy in enemies:
+                    self.level_scene.on_enemy_hit({"enemy": enemy, "projectile": projectile})
     
     def handle_projectile_player_collision(self, projectiles: pygame.sprite.Group, player: pygame.sprite.Sprite):
         collisions = pygame.sprite.spritecollide(player, projectiles, True)
         for projectile in collisions:
-            self.level_scene.on_player_hit({"player": player, "projectile": projectile})
+            if projectile.speed_x < 0:
+                self.level_scene.on_player_hit({"player": player, "projectile": projectile})
 
     def handle_projectile_projectile_collision(self, projectiles: pygame.sprite.Group):
         projectile_list = projectiles.sprites()
