@@ -70,7 +70,8 @@ class LevelScene(Scene):
         return (rect.centerx - (H_POSITION_ENEMY - H_POSITION_PLAYER), rect.centery, rect.centerx, rect.centery)
     
     def _handle_collisions(self) -> None:
-        self.collision_system.handle_projectile_player_collision(self.sprite_groups["projectiles"].projectiles, self.sprite_groups["player"].sprite)
+        if not self.sprite_groups["player"].sprite.win:
+            self.collision_system.handle_projectile_player_collision(self.sprite_groups["projectiles"].projectiles, self.sprite_groups["player"].sprite)
         self.collision_system.handle_projectile_enemy_collision(self.sprite_groups["projectiles"].projectiles, self.sprite_groups["enemies"])
         self.collision_system.handle_projectile_projectile_collision(self.sprite_groups["projectiles"].projectiles)
 
